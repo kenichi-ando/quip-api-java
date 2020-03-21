@@ -83,11 +83,11 @@ public class QuipFolder extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _getJsonObject("folder").get("id").getAsString();
+		return _getString("folder", "id");
 	}
 
 	public String getTitle() {
-		return _getJsonObject("folder").get("title").getAsString();
+		return _getString("folder", "title");
 	}
 
 	public Instant getCreatedUsec() {
@@ -99,15 +99,15 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public String getCreatorId() {
-		return _getJsonObject("folder").get("creator_id").getAsString();
+		return _getString("folder", "creator_id");
 	}
 
 	public Color getColor() {
-		return Color.find(_getJsonObject("folder").get("color").getAsString());
+		return Color.find(_getString("folder", "color"));
 	}
 
 	public String getParentId() {
-		return _getJsonObject("folder").get("parent_id").getAsString();
+		return _getString("folder", "parent_id");
 	}
 
 	public String[] getMemberIds() {

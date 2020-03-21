@@ -58,6 +58,14 @@ class QuipJsonObject extends QuipAccess {
 		return (element == null) ? null : element.getAsJsonObject();
 	}
 
+	protected String _getString(String keyToJsonObject, String keyToString) {
+		JsonObject json = _getJsonObject(keyToJsonObject);
+		if (json == null)
+			return null;
+		JsonElement element = json.get(keyToString);
+		return (element == null) ? null : element.getAsString();
+	}
+
 	protected JsonArray _getJsonArray(String key) {
 		JsonElement element = _json.get(key);
 		return (element == null) ? null : element.getAsJsonArray();

@@ -101,15 +101,15 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _getJsonObject("thread").get("id").getAsString();
+		return _getString("thread", "id");
 	}
 
 	public String getTitle() {
-		return _getJsonObject("thread").get("title").getAsString();
+		return _getString("thread", "title");
 	}
 
 	public String getLink() {
-		return _getJsonObject("thread").get("link").getAsString();
+		return _getString("thread", "link");
 	}
 
 	public Instant getCreatedUsec() {
@@ -121,16 +121,15 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public String getSharing() {
-		JsonElement element = _getJsonObject("thread").get("sharing");
-		return (element == null) ? null : element.getAsString();
+		return _getString("thread", "sharing");
 	}
 
 	public Type getType() {
-		return Type.find(_getJsonObject("thread").get("type").getAsString());
+		return Type.find(_getString("thread", "type"));
 	}
 	
 	public String getAuthorId() {
-		return _getJsonObject("thread").get("author_id").getAsString();
+		return _getString("thread", "author_id");
 	}
 
 	public String[] getSharedFolderIds() {
