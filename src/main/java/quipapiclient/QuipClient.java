@@ -16,7 +16,7 @@ public class QuipClient extends QuipAccess {
 	public static void setAccessToken(String accessToken) throws Exception {
 		Objects.requireNonNull(accessToken);
 		_instance._accessToken = accessToken;
-		if (!verifyToken())
+		if (!_verifyToken())
 			throw new IOException("The access token is invalid.");
 	}
 
@@ -36,7 +36,7 @@ public class QuipClient extends QuipAccess {
 		return _instance._isDebugEnabled;
 	}
 
-	protected static boolean verifyToken() throws Exception {
+	protected static boolean _verifyToken() throws Exception {
 		return (_requestGet("https://platform.quip.com/1/oauth/verify_token").getStatusLine().getStatusCode() == 200);
 	}
 }

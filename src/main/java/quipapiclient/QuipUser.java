@@ -67,11 +67,11 @@ public class QuipUser extends QuipJsonObject {
 	}
 
 	public String[] getGroupFolderIds() {
-		return _stringArray(_json, "group_folder_ids");
+		return _toStringArray(_json, "group_folder_ids");
 	}
 
 	public String[] getSharedFolderIds() {
-		return _stringArray(_json, "shared_folder_ids");
+		return _toStringArray(_json, "shared_folder_ids");
 	}
 
 	public boolean isDisabled() {
@@ -79,11 +79,11 @@ public class QuipUser extends QuipJsonObject {
 	}
 
 	public Instant getCreatedUsec() {
-		return _instant(_json, "created_usec");
+		return _toInstant(_json, "created_usec");
 	}
 
 	public String[] getEmails() {
-		return _stringArray(_json, "emails");
+		return _toStringArray(_json, "emails");
 	}
 
 	public String getSubDomain() {

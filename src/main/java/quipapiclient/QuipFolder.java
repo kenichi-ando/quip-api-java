@@ -92,11 +92,11 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public Instant getCreatedUsec() {
-		return _instant(_json.get("folder").getAsJsonObject(), "created_usec");
+		return _toInstant(_json.get("folder").getAsJsonObject(), "created_usec");
 	}
 
 	public Instant getUpdatedUsec() {
-		return _instant(_json.get("folder").getAsJsonObject(), "updated_usec");
+		return _toInstant(_json.get("folder").getAsJsonObject(), "updated_usec");
 	}
 
 	public String getCreatorId() {
@@ -112,7 +112,7 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public String[] getMemberIds() {
-		return _stringArray(_json, "member_ids");
+		return _toStringArray(_json, "member_ids");
 	}
 
 	public Node[] getChildren() {

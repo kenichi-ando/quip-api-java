@@ -113,11 +113,11 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public Instant getCreatedUsec() {
-		return _instant(_json.get("thread").getAsJsonObject(), "created_usec");
+		return _toInstant(_json.get("thread").getAsJsonObject(), "created_usec");
 	}
 
 	public Instant getUpdatedUsec() {
-		return _instant(_json.get("thread").getAsJsonObject(), "updated_usec");
+		return _toInstant(_json.get("thread").getAsJsonObject(), "updated_usec");
 	}
 
 	public String getSharing() {
@@ -134,15 +134,15 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public String[] getSharedFolderIds() {
-		return _stringArray(_json, "shared_folder_ids");
+		return _toStringArray(_json, "shared_folder_ids");
 	}
 
 	public String[] getUserIds() {
-		return _stringArray(_json, "user_ids");
+		return _toStringArray(_json, "user_ids");
 	}
 
 	public String[] getExpandedUserIds() {
-		return _stringArray(_json, "expanded_user_ids");
+		return _toStringArray(_json, "expanded_user_ids");
 	}
 
 	public String getHtml() {

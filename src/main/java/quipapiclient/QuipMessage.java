@@ -34,11 +34,11 @@ public class QuipMessage extends QuipJsonObject {
 	}
 
 	public Instant getCreatedUsec() {
-		return _instant(_json, "created_usec");
+		return _toInstant(_json, "created_usec");
 	}
 
 	public Instant getUpdatedUsec() {
-		return _instant(_json, "updated_usec");
+		return _toInstant(_json, "updated_usec");
 	}
 
 	public String getText() {
