@@ -1,7 +1,7 @@
 Quip Automation API Client for Java
 ===================================
 
-This is a java client library to use [Quip Automation API](https://salesforce.quip.com/dev/automation/documentation).
+This is a java client library to use [Quip Automation API](https://salesforce.quip.com/dev/automation/documentation). You need to get a personal access token from [here](https://quip.com/api/personal-token) and set it by QuipClient#setAccessToken before calling API.
 
 ## Code Example
 
@@ -26,4 +26,3 @@ This is a java client library to use [Quip Automation API](https://salesforce.qu
 
 * [Quip Automation API Reference](https://quip.com/api/reference)
 * [Quip Automation API Official GitHub Repository](https://github.com/quip/quip-api)
-* [Get a Personal Automation API Access Token](https://quip.com/api/personal-token)
