@@ -8,7 +8,6 @@ import java.util.stream.StreamSupport;
 import org.apache.http.client.fluent.Form;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class QuipUser extends QuipJsonObject {
@@ -26,76 +25,75 @@ public class QuipUser extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _json.get("id").getAsString();
+		return _getString("id");
 	}
 
 	public String getName() {
-		return _json.get("name").getAsString();
+		return _getString("name");
 	}
 
 	public double getAffinity() {
-		return _json.get("affinity").getAsDouble();
+		return _getDouble("affinity");
 	}
 
 	public String getProfilePictureUrl() {
-		return _json.get("profile_picture_url").getAsString();
+		return _getString("profile_picture_url");
 	}
 
 	public String getChatThreadId() {
-		JsonElement element = _json.get("chat_thread_id");
-		return (element == null) ? null : element.getAsString();
+		return _getString("chat_thread_id");
 	}
 
 	public String getDesktopFolderId() {
-		return _json.get("desktop_folder_id").getAsString();
+		return _getString("desktop_folder_id");
 	}
 
 	public String getArchiveFolderId() {
-		return _json.get("archive_folder_id").getAsString();
+		return _getString("archive_folder_id");
 	}
 
 	public String getStarredFolderId() {
-		return _json.get("starred_folder_id").getAsString();
+		return _getString("starred_folder_id");
 	}
 
 	public String getPrivateFolderId() {
-		return _json.get("private_folder_id").getAsString();
+		return _getString("private_folder_id");
 	}
 
 	public String getTrashFolderId() {
-		return _json.get("trash_folder_id").getAsString();
+		return _getString("trash_folder_id");
 	}
 
 	public String[] getGroupFolderIds() {
-		return _toStringArray(_json, "group_folder_ids");
+		return _getStringArray("group_folder_ids");
 	}
 
 	public String[] getSharedFolderIds() {
-		return _toStringArray(_json, "shared_folder_ids");
+		return _getStringArray("shared_folder_ids");
 	}
 
 	public boolean isDisabled() {
-		return _json.get("disabled").getAsBoolean();
+		return _getBoolean("disabled");
 	}
 
 	public Instant getCreatedUsec() {
-		return _toInstant(_json, "created_usec");
+		return _getInstant("created_usec");
 	}
 
 	public String[] getEmails() {
-		return _toStringArray(_json, "emails");
+		return _getStringArray("emails");
 	}
 
 	public String getSubDomain() {
-		return _json.get("subdomain").getAsString();
+		return _getString("subdomain");
 	}
 
 	public String getUrl() {
-		return _json.get("url").getAsString();
+		return _getString("url");
 	}
 
 	public boolean isRobot() {
-		return _json.get("is_robot").getAsBoolean();
+		return _getBoolean("is_robot");
 	}
 
 	// ============================================
@@ -126,7 +124,7 @@ public class QuipUser extends QuipJsonObject {
 	}
 
 	public void reload() throws Exception {
-		_json = _getToJsonObject("https://platform.quip.com/1/users/" + getId());
+		_replace(_getToJsonObject("https://platform.quip.com/1/users/" + getId()));
 	}
 
 	// ============================================
@@ -137,6 +135,6 @@ public class QuipUser extends QuipJsonObject {
 		Form form = Form.form()
 				.add("user_id", getId())
 				.add("profile_picture_url", profilePictureUrl);
-		_json = _postToJsonObject("https://platform.quip.com/1/users/update", form);
+		_replace(_postToJsonObject("https://platform.quip.com/1/users/update", form));
 	}
 }

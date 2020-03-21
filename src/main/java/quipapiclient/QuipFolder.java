@@ -7,7 +7,6 @@ import java.util.stream.StreamSupport;
 
 import org.apache.http.client.fluent.Form;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -84,39 +83,39 @@ public class QuipFolder extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _json.get("folder").getAsJsonObject().get("id").getAsString();
+		return _getJsonObject("folder").get("id").getAsString();
 	}
 
 	public String getTitle() {
-		return _json.get("folder").getAsJsonObject().get("title").getAsString();
+		return _getJsonObject("folder").get("title").getAsString();
 	}
 
 	public Instant getCreatedUsec() {
-		return _toInstant(_json.get("folder").getAsJsonObject(), "created_usec");
+		return _getInstant("folder", "created_usec");
 	}
 
 	public Instant getUpdatedUsec() {
-		return _toInstant(_json.get("folder").getAsJsonObject(), "updated_usec");
+		return _getInstant("folder", "updated_usec");
 	}
 
 	public String getCreatorId() {
-		return _json.get("folder").getAsJsonObject().get("creator_id").getAsString();
+		return _getJsonObject("folder").get("creator_id").getAsString();
 	}
 
 	public Color getColor() {
-		return Color.find(_json.get("folder").getAsJsonObject().get("color").getAsString());
+		return Color.find(_getJsonObject("folder").get("color").getAsString());
 	}
 
 	public String getParentId() {
-		return _json.get("folder").getAsJsonObject().get("parent_id").getAsString();
+		return _getJsonObject("folder").get("parent_id").getAsString();
 	}
 
 	public String[] getMemberIds() {
-		return _toStringArray(_json, "member_ids");
+		return _getStringArray("member_ids");
 	}
 
 	public Node[] getChildren() {
-		JsonArray json = new Gson().fromJson(_json.get("children"), JsonArray.class);
+		JsonArray json = _getJsonArray("children");
 		return StreamSupport.stream(json.spliterator(), false)
 				.map(child -> new Node((JsonObject) child))
 				.toArray(Node[]::new);
@@ -138,7 +137,7 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public void reload() throws Exception {
-		_json = _getToJsonObject("https://platform.quip.com/1/folders/" + getId());
+		_replace(_getToJsonObject("https://platform.quip.com/1/folders/" + getId()));
 	}
 
 	// ============================================
@@ -164,7 +163,7 @@ public class QuipFolder extends QuipJsonObject {
 			form.add("title", title);
 		if (color != null)
 			form.add("color", color._value);
-		_json = _postToJsonObject("https://platform.quip.com/1/folders/update", form);
+		_replace(_postToJsonObject("https://platform.quip.com/1/folders/update", form));
 	}
 
 	// ============================================
@@ -176,10 +175,10 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public void addMembers(String[] userIds) throws Exception {
-		_json = _postToJsonObject("https://platform.quip.com/1/folders/add-members",
+		_replace(_postToJsonObject("https://platform.quip.com/1/folders/add-members",
 				Form.form()
 				.add("folder_id", getId())
-				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));
+				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(",")))));
 	}
 
 	public void removeMember(String userId) throws Exception {
@@ -187,9 +186,9 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public void removeMembers(String[] userIds) throws Exception {
-		_json = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+		_replace(_postToJsonObject("https://platform.quip.com/1/folders/remove-members",
 				Form.form()
 				.add("folder_id", getId())
-				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));
+				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(",")))));
 	}
 }

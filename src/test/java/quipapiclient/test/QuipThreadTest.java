@@ -115,6 +115,20 @@ public class QuipThreadTest {
 	}
 
 	@Test
+	void copyDocumentFromTemplate() throws Exception {
+		QuipThread template = QuipThread.createDocument("テンプレート🌈", "名前 [[user.name]] 年齢 [[user.age]]歳", null, null, null);
+		QuipThread doc1 = template.copyDocument("新規ドキュメント１🔥", "{ \"user\": {\"name\": \"アーニー😊\", \"age\": \"22\" }}", null, null);
+		QuipThread doc2 = template.copyDocument("新規ドキュメント２🔥", "{ \"user\": {\"name\": \"テーラー😊\", \"age\": \"33\" }}", null, null);
+		assertTrue(doc1.getHtml().contains("アーニー😊"));
+		assertTrue(doc1.getHtml().contains("22歳"));
+		assertTrue(doc2.getHtml().contains("テーラー😊"));
+		assertTrue(doc2.getHtml().contains("33歳"));
+		doc1.delete();
+		doc2.delete();
+		template.delete();
+	}
+
+	@Test
 	void lockEdits() throws Exception {
 		QuipThread thread1 = QuipThread.createDocument("ロック🌈", "コンテント...", null, null, null);
 		thread1.lockEdits(true);

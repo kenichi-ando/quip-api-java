@@ -17,10 +17,10 @@ public class QuipBlob extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _json.get("id").getAsString();
+		return _getString("id");
 	}
 
 	public String getUrl() {
-		return _json.get("url").getAsString();
+		return _getString("url");
 	}	
 }

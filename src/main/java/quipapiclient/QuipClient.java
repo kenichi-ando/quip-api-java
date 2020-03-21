@@ -37,6 +37,6 @@ public class QuipClient extends QuipAccess {
 	}
 
 	protected static boolean _verifyToken() throws Exception {
-		return (_requestGet("https://platform.quip.com/1/oauth/verify_token").getStatusLine().getStatusCode() == 200);
+		return (_getToStatusCode("https://platform.quip.com/1/oauth/verify_token") == 200);
 	}
 }

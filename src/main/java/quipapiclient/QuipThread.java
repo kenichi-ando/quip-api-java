@@ -101,53 +101,52 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 
 	public String getId() {
-		return _json.get("thread").getAsJsonObject().get("id").getAsString();
+		return _getJsonObject("thread").get("id").getAsString();
 	}
 
 	public String getTitle() {
-		return _json.get("thread").getAsJsonObject().get("title").getAsString();
+		return _getJsonObject("thread").get("title").getAsString();
 	}
 
 	public String getLink() {
-		return _json.get("thread").getAsJsonObject().get("link").getAsString();
+		return _getJsonObject("thread").get("link").getAsString();
 	}
 
 	public Instant getCreatedUsec() {
-		return _toInstant(_json.get("thread").getAsJsonObject(), "created_usec");
+		return _getInstant("thread", "created_usec");
 	}
 
 	public Instant getUpdatedUsec() {
-		return _toInstant(_json.get("thread").getAsJsonObject(), "updated_usec");
+		return _getInstant("thread", "updated_usec");
 	}
 
 	public String getSharing() {
-		JsonElement element = _json.get("thread").getAsJsonObject().get("sharing");
+		JsonElement element = _getJsonObject("thread").get("sharing");
 		return (element == null) ? null : element.getAsString();
 	}
 
 	public Type getType() {
-		return Type.find(_json.get("thread").getAsJsonObject().get("type").getAsString());
+		return Type.find(_getJsonObject("thread").get("type").getAsString());
 	}
 	
 	public String getAuthorId() {
-		return _json.get("thread").getAsJsonObject().get("author_id").getAsString();
+		return _getJsonObject("thread").get("author_id").getAsString();
 	}
 
 	public String[] getSharedFolderIds() {
-		return _toStringArray(_json, "shared_folder_ids");
+		return _getStringArray("shared_folder_ids");
 	}
 
 	public String[] getUserIds() {
-		return _toStringArray(_json, "user_ids");
+		return _getStringArray("user_ids");
 	}
 
 	public String[] getExpandedUserIds() {
-		return _toStringArray(_json, "expanded_user_ids");
+		return _getStringArray("expanded_user_ids");
 	}
 
 	public String getHtml() {
-		JsonElement element = _json.get("html");
-		return (element == null) ? null : element.getAsString();
+		return _getString("html");
 	}
 
 	// TODO: check the following attributes
@@ -190,7 +189,7 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public void reload() throws Exception {
-		_json = _getToJsonObject("https://platform.quip.com/1/threads/" + getId());
+		_replace(_getToJsonObject("https://platform.quip.com/1/threads/" + getId()));
 	}
 
 	// ============================================
@@ -246,7 +245,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("section_id", sectionId);
 		if (location != null)
 			form.add("location", String.valueOf(location._value));
-		_json = _postToJsonObject("https://platform.quip.com/1/threads/edit-document", form);
+		_replace(_postToJsonObject("https://platform.quip.com/1/threads/edit-document", form));
 	}
 
 	public void delete() throws Exception {
@@ -341,10 +340,10 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public void addMembers(String[] folderOrUserIds) throws Exception {
-		_json = _postToJsonObject("https://platform.quip.com/1/threads/add-members",
+		_replace(_postToJsonObject("https://platform.quip.com/1/threads/add-members",
 				Form.form()
 				.add("thread_id", getId())
-				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
+				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(",")))));
 	}
 
 	public void removeMember(String folderOrUserId) throws Exception {
@@ -352,10 +351,10 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public void removeMembers(String[] folderOrUserIds) throws Exception {
-		_json = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+		_replace(_postToJsonObject("https://platform.quip.com/1/folders/remove-members",
 				Form.form()
 				.add("thread_id", getId())
-				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
+				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(",")))));
 	}
 
 	public boolean editShareLinkSettings(Mode mode, Boolean allowExternalAccess, Boolean showConversation, Boolean showEditHistory,

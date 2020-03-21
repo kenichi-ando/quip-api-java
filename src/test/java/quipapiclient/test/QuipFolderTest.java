@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import quipapiclient.QuipClient;
 import quipapiclient.QuipFolder;
-import quipapiclient.QuipUser;
 import quipapiclient.QuipFolder.Color;
 
 public class QuipFolderTest {
