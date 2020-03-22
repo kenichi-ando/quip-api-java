@@ -5,8 +5,8 @@ This is a java client library to use [Quip Automation API](https://salesforce.qu
 
 ## Steps to use API
 
-1. Get a personal access token from [here](https://quip.com/api/personal-token)
-2. Call QuipClient#setAccessToken to set the access token
+1. Get your personal access token from [here](https://quip.com/api/personal-token)
+2. Call QuipClient#setAccessToken to set the access token you obtained above
 
 ## Code Example
 
