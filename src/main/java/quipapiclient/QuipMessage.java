@@ -58,7 +58,6 @@ public class QuipMessage extends QuipJsonObject {
 	}
 
 	public String[] getFiles() {
-		// TODO: check hash attribute
 		JsonArray arr = _getJsonArray("files");
 		if (arr == null)
 			return null;

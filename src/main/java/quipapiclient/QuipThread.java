@@ -148,10 +148,6 @@ public class QuipThread extends QuipJsonObject {
 		return _getString("html");
 	}
 
-	// TODO: check the following attributes
-	// thread_class
-	// invited_user_emails
-
 	// ============================================
 	// Read / Search
 	// ============================================
