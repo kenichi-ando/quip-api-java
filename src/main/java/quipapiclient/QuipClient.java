@@ -36,7 +36,11 @@ public class QuipClient extends QuipAccess {
 		return _instance._isDebugEnabled;
 	}
 
-	protected static boolean _verifyToken() throws Exception {
+	// ============================================
+	// Private
+	// ============================================
+
+	private static boolean _verifyToken() throws Exception {
 		return (_getToStatusCode("https://platform.quip.com/1/oauth/verify_token") == 200);
 	}
 }
