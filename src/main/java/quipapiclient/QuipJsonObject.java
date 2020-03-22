@@ -10,15 +10,15 @@ import com.google.gson.JsonObject;
 
 class QuipJsonObject extends QuipAccess {
 
-	private JsonObject _json;
+	private JsonObject _jsonObject;
 
 	// ============================================
 	// Constructor
 	// ============================================
 
-	protected QuipJsonObject(JsonObject json) {
-		Objects.requireNonNull(json);
-		_json = json;
+	protected QuipJsonObject(JsonObject object) {
+		Objects.requireNonNull(object);
+		_jsonObject = object;
 	}
 
 	// ============================================
@@ -27,76 +27,91 @@ class QuipJsonObject extends QuipAccess {
 
 	@Override
 	public String toString() {
-		return _json.toString();
+		return _jsonObject.toString();
 	}
 
 	// ============================================
 	// Protected
 	// ============================================
 
-	protected void _replace(JsonObject json) {
-		_json = json;
+	protected void _replace(JsonObject object) {
+		Objects.requireNonNull(object);
+		_jsonObject = object;
 	}
 
 	protected String _getString(String key) {
-		JsonElement element = _json.get(key);
+		JsonElement element = _jsonObject.get(key);
 		return (element == null) ? null : element.getAsString();
 	}
 
 	protected boolean _getBoolean(String key) {
-		JsonElement element = _json.get(key);
+		JsonElement element = _jsonObject.get(key);
 		return (element == null) ? null : element.getAsBoolean();
 	}
 
 	protected double _getDouble(String key) {
-		JsonElement element = _json.get(key);
+		JsonElement element = _jsonObject.get(key);
 		return (element == null) ? null : element.getAsDouble();
 	}
 
 	protected JsonObject _getJsonObject(String key) {
-		JsonElement element = _json.get(key);
+		JsonElement element = _jsonObject.get(key);
 		return (element == null) ? null : element.getAsJsonObject();
 	}
 
 	protected String _getString(String keyToJsonObject, String keyToString) {
-		JsonObject json = _getJsonObject(keyToJsonObject);
-		if (json == null)
+		JsonObject object = _getJsonObject(keyToJsonObject);
+		if (object == null)
 			return null;
-		JsonElement element = json.get(keyToString);
+		JsonElement element = object.get(keyToString);
 		return (element == null) ? null : element.getAsString();
 	}
 
 	protected JsonArray _getJsonArray(String key) {
-		JsonElement element = _json.get(key);
+		JsonElement element = _jsonObject.get(key);
 		return (element == null) ? null : element.getAsJsonArray();
 	}
 
 	protected String[] _getStringArray(String key) {
-		JsonArray arr = _getJsonArray(key);
-		if (arr == null)
+		JsonArray array = _getJsonArray(key);
+		if (array == null)
 			return null;
-		return StreamSupport.stream(arr.spliterator(), false)
-				.map(e -> e.getAsString())
-				.toArray(String[]::new);
+		return _toStringArray(array);
+	}
+
+	protected String[] _getStringArray(String keyToJsonObject, String keyToArray) {
+		JsonObject object = _getJsonObject(keyToJsonObject);
+		if (object == null)
+			return null;
+		JsonArray array = object.get(keyToArray).getAsJsonArray();
+		if (array == null)
+			return null;
+		return _toStringArray(array);
 	}
 
 	protected Instant _getInstant(String key) {
-		return _toInstant(_json, key);
+		return _toInstant(_jsonObject, key);
 	}
 
 	protected Instant _getInstant(String keyToJsonObject, String keyToInstant) {
-		JsonObject json = _getJsonObject(keyToJsonObject);
-		if (json == null)
+		JsonObject object = _getJsonObject(keyToJsonObject);
+		if (object == null)
 			return null;
-		return _toInstant(json, keyToInstant);
+		return _toInstant(object, keyToInstant);
 	}
 
 	// ============================================
 	// Private
 	// ============================================
 
-	private Instant _toInstant(JsonObject json, String key) {
-		long usec = json.get(key).getAsLong();
+	private String[] _toStringArray(JsonArray array) {
+		return StreamSupport.stream(array.spliterator(), false)
+				.map(e -> e.getAsString())
+				.toArray(String[]::new);
+	}
+
+	private Instant _toInstant(JsonObject object, String key) {
+		long usec = object.get(key).getAsLong();
 		return Instant.ofEpochSecond(usec / 1000000, (usec % 1000000) * 1000);
 	}
 }

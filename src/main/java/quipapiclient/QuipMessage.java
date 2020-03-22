@@ -49,8 +49,11 @@ public class QuipMessage extends QuipJsonObject {
 	}
 
 	public String getAnnotationId() {
-		//TODO: check highlight_section_ids
-		return _getString("annotation");
+		return _getString("annotation", "id");
+	}
+
+	public String[] getHighlightSectionIds() {
+		return _getStringArray("annotation", "highlight_section_ids");
 	}
 
 	public boolean isVisible() {

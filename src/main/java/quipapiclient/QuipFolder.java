@@ -136,8 +136,12 @@ public class QuipFolder extends QuipJsonObject {
 				.toArray(QuipFolder[]::new);
 	}
 
-	public void reload() throws Exception {
-		_replace(_getToJsonObject("https://platform.quip.com/1/folders/" + getId()));
+	public boolean reload() throws Exception {
+		JsonObject object = _getToJsonObject("https://platform.quip.com/1/folders/" + getId());
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	// ============================================
@@ -157,38 +161,50 @@ public class QuipFolder extends QuipJsonObject {
 		return new QuipFolder(_postToJsonObject("https://platform.quip.com/1/folders/new", form));
 	}
 
-	public void update(String title, Color color) throws Exception {
+	public boolean update(String title, Color color) throws Exception {
 		Form form = Form.form().add("folder_id", getId());
 		if (title != null)
 			form.add("title", title);
 		if (color != null)
 			form.add("color", color._value);
-		_replace(_postToJsonObject("https://platform.quip.com/1/folders/update", form));
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/update", form);
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	// ============================================
 	// Members
 	// ============================================
 
-	public void addMember(String userId) throws Exception {
-		addMembers(new String[] { userId });
+	public boolean addMember(String userId) throws Exception {
+		return addMembers(new String[] { userId });
 	}
 
-	public void addMembers(String[] userIds) throws Exception {
-		_replace(_postToJsonObject("https://platform.quip.com/1/folders/add-members",
+	public boolean addMembers(String[] userIds) throws Exception {
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/add-members",
 				Form.form()
 				.add("folder_id", getId())
-				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(",")))));
+				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
-	public void removeMember(String userId) throws Exception {
-		removeMembers(new String[] { userId });
+	public boolean removeMember(String userId) throws Exception {
+		return removeMembers(new String[] { userId });
 	}
 
-	public void removeMembers(String[] userIds) throws Exception {
-		_replace(_postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+	public boolean removeMembers(String[] userIds) throws Exception {
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
 				Form.form()
 				.add("folder_id", getId())
-				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(",")))));
+				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 }

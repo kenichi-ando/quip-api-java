@@ -123,18 +123,26 @@ public class QuipUser extends QuipJsonObject {
 				.toArray(QuipUser[]::new);
 	}
 
-	public void reload() throws Exception {
-		_replace(_getToJsonObject("https://platform.quip.com/1/users/" + getId()));
+	public boolean reload() throws Exception {
+		JsonObject object = _getToJsonObject("https://platform.quip.com/1/users/" + getId());
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	// ============================================
 	// Update
 	// ============================================
 	
-	public void update(String profilePictureUrl) throws Exception {
+	public boolean update(String profilePictureUrl) throws Exception {
 		Form form = Form.form()
 				.add("user_id", getId())
 				.add("profile_picture_url", profilePictureUrl);
-		_replace(_postToJsonObject("https://platform.quip.com/1/users/update", form));
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/users/update", form);
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 }

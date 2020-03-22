@@ -12,7 +12,6 @@ import org.apache.http.client.fluent.Form;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class QuipThread extends QuipJsonObject {
@@ -183,8 +182,12 @@ public class QuipThread extends QuipJsonObject {
 				.toArray(QuipThread[]::new);
 	}
 
-	public void reload() throws Exception {
-		_replace(_getToJsonObject("https://platform.quip.com/1/threads/" + getId()));
+	public boolean reload() throws Exception {
+		JsonObject object = _getToJsonObject("https://platform.quip.com/1/threads/" + getId());
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	// ============================================
@@ -230,7 +233,7 @@ public class QuipThread extends QuipJsonObject {
 		return new QuipThread(_postToJsonObject("https://platform.quip.com/1/threads/copy-document", form));
 	}
 
-	public void editDocument(String content, Format format, String sectionId, Location location) throws Exception {
+	public boolean editDocument(String content, Format format, String sectionId, Location location) throws Exception {
 		Form form = Form.form().add("thread_id", getId());
 		if (format != null)
 			form.add("format", format._value);
@@ -240,7 +243,12 @@ public class QuipThread extends QuipJsonObject {
 			form.add("section_id", sectionId);
 		if (location != null)
 			form.add("location", String.valueOf(location._value));
-		_replace(_postToJsonObject("https://platform.quip.com/1/threads/edit-document", form));
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/edit-document", form);
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
+
 	}
 
 	public void delete() throws Exception {
@@ -330,26 +338,34 @@ public class QuipThread extends QuipJsonObject {
 	// Members
 	// ============================================
 
-	public void addMember(String folderOrUserId) throws Exception {
-		addMembers(new String[] { folderOrUserId });
+	public boolean addMember(String folderOrUserId) throws Exception {
+		return addMembers(new String[] { folderOrUserId });
 	}
 
-	public void addMembers(String[] folderOrUserIds) throws Exception {
-		_replace(_postToJsonObject("https://platform.quip.com/1/threads/add-members",
+	public boolean addMembers(String[] folderOrUserIds) throws Exception {
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/add-members",
 				Form.form()
 				.add("thread_id", getId())
-				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(",")))));
+				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
-	public void removeMember(String folderOrUserId) throws Exception {
-		removeMembers(new String[] { folderOrUserId });
+	public boolean removeMember(String folderOrUserId) throws Exception {
+		return removeMembers(new String[] { folderOrUserId });
 	}
 
-	public void removeMembers(String[] folderOrUserIds) throws Exception {
-		_replace(_postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+	public boolean removeMembers(String[] folderOrUserIds) throws Exception {
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
 				Form.form()
 				.add("thread_id", getId())
-				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(",")))));
+				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	public boolean editShareLinkSettings(Mode mode, Boolean allowExternalAccess, Boolean showConversation, Boolean showEditHistory,

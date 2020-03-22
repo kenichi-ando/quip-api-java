@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +17,7 @@ import quipapiclient.QuipMessage;
 import quipapiclient.QuipThread;
 import quipapiclient.QuipThread.Format;
 import quipapiclient.QuipThread.Frame;
+import quipapiclient.QuipThread.Location;
 import quipapiclient.QuipThread.Mode;
 import quipapiclient.QuipThread.Type;
 
@@ -102,6 +106,11 @@ public class QuipThreadTest {
 		for (QuipThread t: results) {
 			System.out.println(t.getTitle());
 		}
+
+		results = QuipThread.searchThreads("追加テスト🌈", 10, false);
+		for (QuipThread t: results) {
+			System.out.println(t.getTitle());
+		}
 	}
 
 	@Test
@@ -143,5 +152,29 @@ public class QuipThreadTest {
 		thread1.editShareLinkSettings(Mode.VIEW, true, false, true, false, true, false);
 		thread1.editShareLinkSettings(Mode.NONE, true, true, true, true, true, true);
 		thread1.delete();
+	}
+
+	@Test
+	void editDocumentWithLocation() throws Exception {
+		QuipThread doc = QuipThread.createDocument("テスト🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+		String html = doc.getHtml();
+		List<String> sectionIds = new ArrayList<>();
+		int index = 0;
+		while (true) {
+			index = html.indexOf("id='", index);
+			if (index == -1)
+				break;
+			index += 4;
+			String sectionId = html.substring(index, html.indexOf("'", index));
+			sectionIds.add(sectionId);
+		}
+
+		doc.editDocument("アペンド🐷", Format.HTML, null, Location.APPEND);
+		doc.editDocument("プリペンド🐷", Format.HTML, null, Location.PREPEND);
+		doc.editDocument("アフターセクション１🐷", Format.HTML, sectionIds.get(1), Location.AFTER_SECTION);
+		doc.editDocument("ビフォーセクション３🐷", Format.HTML, sectionIds.get(3), Location.BEFORE_SECTION);
+		doc.editDocument("リプレースセクション２🐷", Format.HTML, sectionIds.get(2), Location.REPLACE_SECTION);
+		doc.editDocument("削除セクション１🐷", Format.HTML, sectionIds.get(1), Location.DELETE_SECTION);
+		doc.delete();
 	}
 }

@@ -7,6 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,36 @@ public class QuipMessageTest {
 		assertEquals("コメント１🔥", msg.getText());
 		assertNull(msg.getParts());
 		assertNull(msg.getAnnotationId());
+		doc.delete();
+	}
+
+	@Test
+	void addMessageToSction() throws Exception {
+		QuipThread doc = QuipThread.createDocument("テスト🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+		String html = doc.getHtml();
+		List<String> sectionIds = new ArrayList<>();
+		int index = 0;
+		while (true) {
+			index = html.indexOf("id='", index);
+			if (index == -1)
+				break;
+			index += 4;
+			String sectionId = html.substring(index, html.indexOf("'", index));
+			sectionIds.add(sectionId);
+		}
+		QuipMessage msg1 = doc.addMessage(Frame.BUBBLE, "バブル🐷", null, true, null, null, sectionIds.get(1));
+		QuipMessage msg2 = doc.addMessage(Frame.LINE, "ライン🐷", null, true, null, null, sectionIds.get(1));
+		QuipMessage msg3 = doc.addMessage(Frame.CARD, "カード🐷", null, true, null, null, sectionIds.get(1));
+		assertEquals("バブル🐷", msg1.getText());
+		assertFalse(msg1.getAnnotationId().isEmpty());
+		assertFalse(msg1.getHighlightSectionIds()[0].isEmpty());
+		assertEquals("ライン🐷", msg2.getText());
+		assertFalse(msg2.getAnnotationId().isEmpty());
+		assertFalse(msg2.getHighlightSectionIds()[0].isEmpty());
+		assertEquals("カード🐷", msg3.getText());
+		assertFalse(msg3.getAnnotationId().isEmpty());
+		assertFalse(msg3.getHighlightSectionIds()[0].isEmpty());
+		doc.reload();
 		doc.delete();
 	}
 
