@@ -75,6 +75,29 @@ public class QuipMessageTest {
 	}
 
 	@Test
+	void addMessageToAnnotation() throws Exception {
+		QuipThread doc = QuipThread.createDocument("テスト🐷", "# タイトル１🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+		String html = doc.getHtml();
+		int index = html.indexOf("id='") + 4;
+		String sectionId = html.substring(index, html.indexOf("'", index));
+		QuipMessage msg1 = doc.addMessage(Frame.BUBBLE, "バブル１🐷", null, true, null, null, sectionId);
+		String annotationId = msg1.getAnnotationId();
+		String highlightSectionId = msg1.getHighlightSectionIds()[0];
+		assertEquals("バブル１🐷", msg1.getText());
+		assertFalse(annotationId.isEmpty());
+		assertFalse(highlightSectionId.isEmpty());
+		QuipMessage msg2 = doc.addMessage(Frame.BUBBLE, "バブル２🐷", null, true, null, null, sectionId);
+		assertEquals("バブル２🐷", msg2.getText());
+		assertEquals(annotationId, msg2.getAnnotationId());
+		assertEquals(highlightSectionId, msg2.getHighlightSectionIds()[0]);
+		QuipMessage msg3 = doc.addMessage(Frame.BUBBLE, "バブル３🐷", null, true, null, annotationId, null);
+		assertEquals("バブル３🐷", msg3.getText());
+		assertEquals(annotationId, msg3.getAnnotationId());
+		assertEquals(highlightSectionId, msg3.getHighlightSectionIds()[0]);
+		doc.delete();
+	}
+
+	@Test
 	void getRecentMessages() throws Exception {
 		QuipThread doc = QuipThread.createDocument("ドキュメント１🌈", "あいうえお🔥", null, Format.HTML, Type.DOCUMENT);
 		doc.addMessage(Frame.BUBBLE, "コメント１🔥", null, false, null, null, null);
@@ -92,7 +115,7 @@ public class QuipMessageTest {
 	@Test
 	void addMessageWithAttachment() throws Exception {
 		QuipThread chat = QuipThread.createChat("チャットルーム１🌈", "メッセージ１🔥", null);
-		QuipBlob blob = chat.addBlob(new File("/tmp/swu.log"));
+		QuipBlob blob = chat.addBlob(new File("/tmp/image.png"));
 		QuipMessage msg = chat.addMessage(Frame.BUBBLE, "添付🔥", null, false, new String[] { blob.getId() }, null, null);
 		assertFalse(msg.getId().isEmpty());
 		assertFalse(msg.getAuthorId().isEmpty());
@@ -102,7 +125,7 @@ public class QuipMessageTest {
 		assertNotNull(msg.getUpdatedUsec());
 		assertEquals("添付🔥", msg.getText());
 		assertEquals(1, msg.getFiles().length);
-		assertEquals("swu.log", msg.getFiles()[0]);
+		assertEquals("image.png", msg.getFiles()[0]);
 		assertNull(msg.getParts());
 		assertNull(msg.getAnnotationId());
 		chat.delete();
