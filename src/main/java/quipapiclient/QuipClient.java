@@ -40,7 +40,7 @@ public class QuipClient extends QuipAccess {
 	// Private
 	// ============================================
 
-	private static boolean _verifyToken() throws Exception {
+	private static boolean _verifyToken() throws IOException {
 		return (_getToStatusCode("https://platform.quip.com/1/oauth/verify_token") == 200);
 	}
 }

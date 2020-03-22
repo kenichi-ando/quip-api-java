@@ -5,8 +5,6 @@ import java.io.IOException;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
@@ -16,7 +14,6 @@ import org.apache.http.util.EntityUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 class QuipAccess {
 
@@ -24,23 +21,23 @@ class QuipAccess {
 	// Protected
 	// ============================================
 	
-	protected static JsonObject _getToJsonObject(String uri) throws ClientProtocolException, IOException {
+	protected static JsonObject _getToJsonObject(String uri) throws IOException {
 		return _toJsonObject(_requestGet(uri));
 	}
 
-	protected static JsonObject _getToJsonObject(String uri, String param) throws ClientProtocolException, IOException {
+	protected static JsonObject _getToJsonObject(String uri, String param) throws IOException {
 		return _toJsonObject(_requestGet(uri, param));
 	}
 
-	protected static JsonArray _getToJsonArray(String uri) throws ClientProtocolException, IOException {
+	protected static JsonArray _getToJsonArray(String uri) throws IOException {
 		return _toJsonArray(_requestGet(uri));
 	}
 
-	protected static JsonArray _getToJsonArray(String uri, String param) throws ClientProtocolException, IOException {
+	protected static JsonArray _getToJsonArray(String uri, String param) throws IOException {
 		return _toJsonArray(_requestGet(uri, param));
 	}
 
-	protected static byte[] _getToByteArray(String uri) throws ClientProtocolException, IOException {
+	protected static byte[] _getToByteArray(String uri) throws IOException {
 		HttpResponse res = _requestGet(uri);
 		if (res.getStatusLine().getStatusCode() == 200) {
 			byte[] buff = new byte[(int) res.getEntity().getContentLength()];
@@ -52,19 +49,19 @@ class QuipAccess {
 		}
 	}
 
-	protected static int _getToStatusCode(String uri) throws ClientProtocolException, IOException {
+	protected static int _getToStatusCode(String uri) throws IOException {
 		return _requestGet(uri).getStatusLine().getStatusCode();
 	}
 
-	protected static JsonObject _postToJsonObject(String uri, Form form) throws ClientProtocolException, IOException {
+	protected static JsonObject _postToJsonObject(String uri, Form form) throws IOException {
 		return _toJsonObject(_requestPost(uri, form));
 	}
 
-	protected static JsonObject _postToJsonObject(String uri, MultipartEntityBuilder multi) throws ClientProtocolException, IOException {
+	protected static JsonObject _postToJsonObject(String uri, MultipartEntityBuilder multi) throws IOException {
 		return _toJsonObject(_requestPost(uri, multi));
 	}
 
-	protected static JsonArray _postToJsonArray(String uri, Form form) throws ClientProtocolException, IOException {
+	protected static JsonArray _postToJsonArray(String uri, Form form) throws IOException {
 		return _toJsonArray(_requestPost(uri, form));
 	}
 
@@ -72,24 +69,24 @@ class QuipAccess {
 	// Private
 	// ============================================
 
-	private static HttpResponse _requestGet(String uri) throws ClientProtocolException, IOException {
+	private static HttpResponse _requestGet(String uri) throws IOException {
 		return _sendRequest(Request.Get(uri));
 	}
 
-	private static HttpResponse _requestGet(String uri, String param) throws ClientProtocolException, IOException {
+	private static HttpResponse _requestGet(String uri, String param) throws IOException {
 		return _sendRequest(Request.Get(uri + "?" + param));
 	}
 
-	private static HttpResponse _requestPost(String uri, Form form) throws ClientProtocolException, IOException {
+	private static HttpResponse _requestPost(String uri, Form form) throws IOException {
 		return _sendRequest(Request.Post(uri)
 				.body(new UrlEncodedFormEntity(form.build(), Consts.UTF_8)));
 	}
 
-	private static HttpResponse _requestPost(String uri, MultipartEntityBuilder multi) throws ClientProtocolException, IOException {
+	private static HttpResponse _requestPost(String uri, MultipartEntityBuilder multi) throws IOException {
 		return _sendRequest(Request.Post(uri).body(multi.build()));
 	}
 
-	private static HttpResponse _sendRequest(Request req) throws ClientProtocolException, IOException {
+	private static HttpResponse _sendRequest(Request req) throws IOException {
 		if (QuipClient._isDebugEnabled())
 			System.out.println(System.lineSeparator() + "Request> " + req.toString());
 		HttpResponse response = req.addHeader(HttpHeaders.AUTHORIZATION, QuipClient._getBearerToken()).execute().returnResponse();
@@ -98,7 +95,7 @@ class QuipAccess {
 		return response;
 	}
 
-	private static JsonObject _toJsonObject(HttpResponse response) throws JsonSyntaxException, ParseException, IOException {
+	private static JsonObject _toJsonObject(HttpResponse response) throws IOException {
 		JsonObject json = new Gson().fromJson(EntityUtils.toString(response.getEntity()), JsonObject.class);
 		if (QuipClient._isDebugEnabled())
 			System.out.println("Json> " + json.toString());
@@ -107,7 +104,7 @@ class QuipAccess {
 		return json;
 	}
 
-	private static JsonArray _toJsonArray(HttpResponse response) throws JsonSyntaxException, ParseException, IOException {
+	private static JsonArray _toJsonArray(HttpResponse response) throws IOException {
 		JsonArray json = new Gson().fromJson(EntityUtils.toString(response.getEntity()), JsonArray.class);
 		if (QuipClient._isDebugEnabled())
 			System.out.println("Json> " + json.toString());
