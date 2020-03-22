@@ -1,16 +1,28 @@
-Quip Automation API Client for Java
-===================================
+package quipapiclient.test;
 
-This is a java client library to use [Quip Automation API](https://salesforce.quip.com/dev/automation/documentation).
+import java.io.File;
 
-## Steps to use API
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-1. Get a personal access token from [here](https://quip.com/api/personal-token)
-2. Call QuipClient#setAccessToken to set the access token
+import quipapiclient.QuipBlob;
+import quipapiclient.QuipClient;
+import quipapiclient.QuipThread;
+import quipapiclient.QuipThread.Format;
+import quipapiclient.QuipThread.Type;
 
-## Code Example
+public class QuipBasicTest {
+	private static String QUIP_ACCESS_TOKEN;
+	private static String IMAGE_FILE_PATH;
 
-```
+	@BeforeAll
+	static void init() throws Exception {
+		QUIP_ACCESS_TOKEN = System.getenv("QUIP_ACCESS_TOKEN");
+		IMAGE_FILE_PATH = "/tmp/image.png";
+		QuipClient.enableDebug(true);
+	}
+
+	@Test
 	void example() throws Exception {
 		// Set your personal access token
 		QuipClient.setAccessToken(QUIP_ACCESS_TOKEN);
@@ -30,9 +42,4 @@ This is a java client library to use [Quip Automation API](https://salesforce.qu
 		// Delete the document
 		thread.delete();
 	}
-```
-
-## Reference
-
-* [Quip Automation API Reference](https://quip.com/api/reference)
-* [Quip Automation API Official GitHub Repository](https://github.com/quip/quip-api)
+}
