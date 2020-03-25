@@ -10,7 +10,7 @@ This is a java client library to use [Quip Automation API](https://salesforce.qu
 
 ## Code Example
 
-```
+```java
 	void example() throws Exception {
 		// Set your personal access token
 		QuipClient.setAccessToken(QUIP_ACCESS_TOKEN);
