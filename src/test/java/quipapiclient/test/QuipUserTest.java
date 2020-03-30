@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import quipapiclient.QuipClient;
+import quipapiclient.QuipFolder;
 import quipapiclient.QuipUser;
 
 public class QuipUserTest {
@@ -44,6 +45,10 @@ public class QuipUserTest {
 
 		System.out.println(user.getChatThreadId());
 		System.out.println(Arrays.toString(user.getSharedFolderIds()));
+		for (String fid: user.getSharedFolderIds()) {
+			QuipFolder f = QuipFolder.getFolder(fid);
+			System.out.println(f.getTitle());
+		}
 	}
 
 	@Test
