@@ -11,7 +11,7 @@ public class QuipBlob extends QuipJsonObject {
 	protected QuipBlob(JsonObject json) {
 		super(json);
 	}
-	
+
 	// ============================================
 	// Properties
 	// ============================================
@@ -22,5 +22,5 @@ public class QuipBlob extends QuipJsonObject {
 
 	public String getUrl() {
 		return _getString("url");
-	}	
+	}
 }

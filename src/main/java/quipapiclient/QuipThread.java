@@ -2,7 +2,6 @@ package quipapiclient;
 
 import java.io.File;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -170,7 +169,7 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public static QuipThread[] searchThreads(String query, Integer count, Boolean isOnlyMatchTitles) throws Exception {
-		String param = "query=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+		String param = "query=" + URLEncoder.encode(query, "UTF-8");
 		if (count != null)
 			param += "&count=" + count;
 		if (isOnlyMatchTitles != null)
