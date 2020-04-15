@@ -1,8 +1,8 @@
 package quipapiclient.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
@@ -43,7 +43,7 @@ public class QuipBlobTest {
 		assertEquals(file.length(), data.length);
 		thread.delete();
 	}
-	
+
 	@Test
 	void addBlob2() throws Exception {
 		QuipThread thread = QuipThread.createDocument("タイトル🌈", "新規作成🔥", null, Format.HTML, Type.DOCUMENT);
