@@ -247,7 +247,29 @@ public class QuipThread extends QuipJsonObject {
 			return false;
 		_replace(object);
 		return true;
+	}
 
+	public boolean createLivePasteSection(String sourceThreadId, String[] sourceSectionIds, String destinationSectionId,
+			Location location, Boolean isUpdateAutomatic) throws Exception {
+		Form form = Form.form().add("destination_thread_id", getId());
+		if (sourceThreadId != null)
+			form.add("source_thread_id", sourceThreadId);
+		if (sourceSectionIds != null)
+			form.add("source_section_ids", Stream.of(sourceSectionIds).collect(Collectors.joining(",")));
+		if (destinationSectionId != null)
+			form.add("destination_section_id", destinationSectionId);
+		if (location != null) {
+			if (location == Location.DELETE_SECTION)
+				throw new IllegalArgumentException("The location of DELETE_SECTION is not supported.");
+			form.add("location", String.valueOf(location._value));
+		}
+		if (isUpdateAutomatic != null)
+			form.add("update_automatic", isUpdateAutomatic ? "True" : "False");
+		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/live-paste", form);
+		if (object == null)
+			return false;
+		_replace(object);
+		return true;
 	}
 
 	public void delete() throws Exception {

@@ -51,7 +51,7 @@ public class QuipThreadTest {
 			System.out.println(t.getId() + ", " + t.getTitle() + ", " + t.getLink());
 		}
 	}
-	
+
 	@Test
 	void createDocument() throws Exception {
 		QuipThread doc = QuipThread.createDocument("ドキュメント１🌈", "あいうえお🔥", null, Format.HTML, Type.DOCUMENT);
@@ -157,24 +157,57 @@ public class QuipThreadTest {
 	@Test
 	void editDocumentWithLocation() throws Exception {
 		QuipThread doc = QuipThread.createDocument("テスト🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
-		String html = doc.getHtml();
-		List<String> sectionIds = new ArrayList<>();
-		int index = 0;
-		while (true) {
-			index = html.indexOf("id='", index);
-			if (index == -1)
-				break;
-			index += 4;
-			String sectionId = html.substring(index, html.indexOf("'", index));
-			sectionIds.add(sectionId);
-		}
-
+		List<String> sectionIds = getSectionIds(doc);
 		doc.editDocument("アペンド🐷", Format.HTML, null, Location.APPEND);
 		doc.editDocument("プリペンド🐷", Format.HTML, null, Location.PREPEND);
 		doc.editDocument("アフターセクション１🐷", Format.HTML, sectionIds.get(1), Location.AFTER_SECTION);
 		doc.editDocument("ビフォーセクション３🐷", Format.HTML, sectionIds.get(3), Location.BEFORE_SECTION);
 		doc.editDocument("リプレースセクション２🐷", Format.HTML, sectionIds.get(2), Location.REPLACE_SECTION);
 		doc.editDocument("削除セクション１🐷", Format.HTML, sectionIds.get(1), Location.DELETE_SECTION);
+		assertTrue(doc.getHtml().contains("アペンド🐷"));
+		assertTrue(doc.getHtml().contains("プリペンド🐷"));
+		assertTrue(doc.getHtml().contains("アフターセクション１🐷"));
+		assertTrue(doc.getHtml().contains("ビフォーセクション３🐷"));
+		assertTrue(doc.getHtml().contains("リプレースセクション２🐷"));
+		assertFalse(doc.getHtml().contains("削除セクション１🐷"));
 		doc.delete();
+	}
+
+	@Test
+	void createLivePasteSection() throws Exception {
+		QuipThread srcDoc = QuipThread.createDocument("ライブペースト：コピー元🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+		QuipThread dstDoc = QuipThread.createDocument("ライブペースト：貼り付け先🐧", "# タイトル１🐧\n## セクション１🐧\n## セクション２🐧\n## セクション３🐧", null, Format.MARKDOWN, Type.DOCUMENT);
+		List<String> srcSecIds = getSectionIds(srcDoc);
+		List<String> dstSecIds = getSectionIds(dstDoc);
+		dstDoc.createLivePasteSection(srcDoc.getId(), new String[] { srcSecIds.get(1) }, dstSecIds.get(1), Location.APPEND, true);
+		dstDoc.createLivePasteSection(srcDoc.getId(), new String[] { srcSecIds.get(1) }, dstSecIds.get(1), Location.PREPEND, true);
+		dstDoc.createLivePasteSection(srcDoc.getId(), new String[] { srcSecIds.get(2) }, dstSecIds.get(2), Location.AFTER_SECTION, true);
+		dstDoc.createLivePasteSection(srcDoc.getId(), new String[] { srcSecIds.get(2) }, dstSecIds.get(2), Location.BEFORE_SECTION, true);
+		dstDoc.createLivePasteSection(srcDoc.getId(), new String[] { srcSecIds.get(3) }, dstSecIds.get(3), Location.REPLACE_SECTION, true);
+		srcDoc.editDocument("変更🐄１", Format.HTML, srcSecIds.get(1), Location.REPLACE_SECTION);
+		srcDoc.editDocument("変更🐄２", Format.HTML, srcSecIds.get(2), Location.REPLACE_SECTION);
+		srcDoc.editDocument("変更🐄３", Format.HTML, srcSecIds.get(3), Location.REPLACE_SECTION);
+		assertTrue(srcDoc.getHtml().contains("変更🐄１"));
+		assertTrue(srcDoc.getHtml().contains("変更🐄２"));
+		assertTrue(srcDoc.getHtml().contains("変更🐄３"));
+		srcDoc.delete();
+		dstDoc.delete();
+	}
+
+	private List<String> getSectionIds(QuipThread doc) {
+		String html = doc.getHtml();
+		List<String> sectionIds = new ArrayList<>();
+		int offset = 0;
+		while (true) {
+			int start = html.indexOf("id='", offset);
+			if (start == -1)
+				break;
+			start += 4;
+			int end = html.indexOf("'", start);
+			String sectionId = html.substring(start, end);
+			sectionIds.add(sectionId);
+			offset = end + 1;
+		}
+		return sectionIds;
 	}
 }
