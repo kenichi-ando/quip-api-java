@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,6 +193,16 @@ public class QuipThreadTest {
 		assertTrue(srcDoc.getHtml().contains("変更🐄３"));
 		srcDoc.delete();
 		dstDoc.delete();
+	}
+
+	@Test
+	void testExportPdf() throws Exception {
+		QuipThread thread = QuipThread.createDocument("スライドテスト２２🔥", "あいうえお🌈🌈🌈", null, Format.HTML, Type.SLIDES);
+		byte[] data = thread.exportAsPdf();
+		FileOutputStream fileOuputStream = new FileOutputStream("/tmp/export.pdf");
+		fileOuputStream.write(data);
+		fileOuputStream.close();
+		thread.delete();
 	}
 
 	private List<String> getSectionIds(QuipThread doc) {

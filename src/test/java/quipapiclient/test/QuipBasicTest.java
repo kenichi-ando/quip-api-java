@@ -26,6 +26,17 @@ public class QuipBasicTest {
 	void example() throws Exception {
 		// Set your personal access token
 		QuipClient.setAccessToken(QUIP_ACCESS_TOKEN);
+		/*
+		String clientId = QUIP_CLIENT_ID;
+		String clientSecret = QUIP_CLIENT_SECRET;
+		String redirectUri = "http://localhost";
+		String authUrl = QuipClient.getAuthorizationUrl(clientId, clientSecret, redirectUri, null);
+		System.out.print("Open this URL:\n" + authUrl + "\n");
+		Scanner scanner = new Scanner(System.in);
+		String code = scanner.nextLine();
+		scanner.close();
+		QuipClient.setAccessToken(clientId, clientSecret, redirectUri, code);
+		*/
 
 		// Get a list of documents recently updated
 		QuipThread[] threads = QuipThread.getRecentThreads();

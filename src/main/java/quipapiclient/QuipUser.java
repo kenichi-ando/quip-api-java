@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.http.client.fluent.Form;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -109,8 +110,8 @@ public class QuipUser extends QuipJsonObject {
 	}
 
 	public static QuipUser[] getUsers(String[] userIdOrEmails) throws Exception {
-		JsonObject json = _getToJsonObject("https://platform.quip.com/1/users/",
-				"ids=" + Stream.of(userIdOrEmails).collect(Collectors.joining(",")));
+		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/users/")
+				.addParameter("ids", Stream.of(userIdOrEmails).collect(Collectors.joining(","))).build());
 		return json.keySet().stream()
 				.map(id -> new QuipUser(json.get(id).getAsJsonObject()))
 				.toArray(QuipUser[]::new);

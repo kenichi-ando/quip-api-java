@@ -1,6 +1,7 @@
 package quipapiclient;
 
 import java.io.IOException;
+import java.net.URI;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
@@ -25,16 +26,16 @@ class QuipAccess {
 		return _toJsonObject(_requestGet(uri));
 	}
 
-	protected static JsonObject _getToJsonObject(String uri, String param) throws IOException {
-		return _toJsonObject(_requestGet(uri, param));
+	protected static JsonObject _getToJsonObject(URI uri) throws IOException {
+		return _toJsonObject(_requestGet(uri));
 	}
 
 	protected static JsonArray _getToJsonArray(String uri) throws IOException {
 		return _toJsonArray(_requestGet(uri));
 	}
 
-	protected static JsonArray _getToJsonArray(String uri, String param) throws IOException {
-		return _toJsonArray(_requestGet(uri, param));
+	protected static JsonArray _getToJsonArray(URI uri) throws IOException {
+		return _toJsonArray(_requestGet(uri));
 	}
 
 	protected static byte[] _getToByteArray(String uri) throws IOException {
@@ -53,12 +54,20 @@ class QuipAccess {
 		return _requestGet(uri).getStatusLine().getStatusCode();
 	}
 
+	protected static String _getToString(URI uri) throws IOException {
+		return _toString(_requestGet(uri));
+	}
+
 	protected static JsonObject _postToJsonObject(String uri, Form form) throws IOException {
 		return _toJsonObject(_requestPost(uri, form));
 	}
 
 	protected static JsonObject _postToJsonObject(String uri, MultipartEntityBuilder multi) throws IOException {
 		return _toJsonObject(_requestPost(uri, multi));
+	}
+
+	protected static JsonObject _postToJsonObject(URI uri) throws IOException {
+		return _toJsonObject(_requestPost(uri));
 	}
 
 	protected static JsonArray _postToJsonArray(String uri, Form form) throws IOException {
@@ -73,8 +82,8 @@ class QuipAccess {
 		return _sendRequest(Request.Get(uri));
 	}
 
-	private static HttpResponse _requestGet(String uri, String param) throws IOException {
-		return _sendRequest(Request.Get(uri + "?" + param));
+	private static HttpResponse _requestGet(URI uri) throws IOException {
+		return _sendRequest(Request.Get(uri));
 	}
 
 	private static HttpResponse _requestPost(String uri, Form form) throws IOException {
@@ -86,17 +95,28 @@ class QuipAccess {
 		return _sendRequest(Request.Post(uri).body(multi.build()));
 	}
 
+	private static HttpResponse _requestPost(URI uri) throws IOException {
+		return _sendRequest(Request.Post(uri));
+	}
+
 	private static HttpResponse _sendRequest(Request req) throws IOException {
 		if (QuipClient._isDebugEnabled())
 			System.out.println(System.lineSeparator() + "Request> " + req.toString());
-		HttpResponse response = req.addHeader(HttpHeaders.AUTHORIZATION, QuipClient._getBearerToken()).execute().returnResponse();
+		String token = QuipClient._getBearerToken();
+		if (token != null)
+			req.addHeader(HttpHeaders.AUTHORIZATION, token);
+		HttpResponse response = req.execute().returnResponse();
 		if (QuipClient._isDebugEnabled())
 			System.out.println("Response> " + response.getStatusLine().toString() + " " + response.getEntity().toString());
 		return response;
 	}
 
+	private static String _toString(HttpResponse response) throws IOException {
+		return EntityUtils.toString(response.getEntity());
+	}
+
 	private static JsonObject _toJsonObject(HttpResponse response) throws IOException {
-		JsonObject json = new Gson().fromJson(EntityUtils.toString(response.getEntity()), JsonObject.class);
+		JsonObject json = new Gson().fromJson(_toString(response), JsonObject.class);
 		if (QuipClient._isDebugEnabled())
 			System.out.println("Json> " + json.toString());
 		if (_checkError(json))
@@ -105,7 +125,7 @@ class QuipAccess {
 	}
 
 	private static JsonArray _toJsonArray(HttpResponse response) throws IOException {
-		JsonArray json = new Gson().fromJson(EntityUtils.toString(response.getEntity()), JsonArray.class);
+		JsonArray json = new Gson().fromJson(_toString(response), JsonArray.class);
 		if (QuipClient._isDebugEnabled())
 			System.out.println("Json> " + json.toString());
 		return json;

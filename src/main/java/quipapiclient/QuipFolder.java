@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.http.client.fluent.Form;
+import org.apache.http.client.utils.URIBuilder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -130,8 +131,8 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public static QuipFolder[] getFolders(String[] folderIds) throws Exception {
-		JsonObject json = _getToJsonObject("https://platform.quip.com/1/folders/",
-				"ids=" + Stream.of(folderIds).collect(Collectors.joining(",")));
+		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/folders/")
+				.addParameter("ids", Stream.of(folderIds).collect(Collectors.joining(","))).build());
 		return json.keySet().stream().map(id -> new QuipFolder(json.get(id).getAsJsonObject()))
 				.toArray(QuipFolder[]::new);
 	}

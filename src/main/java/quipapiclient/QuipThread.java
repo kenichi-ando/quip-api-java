@@ -1,14 +1,18 @@
 package quipapiclient;
 
 import java.io.File;
-import java.net.URLEncoder;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Form;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -155,8 +159,8 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public static QuipThread[] getThreads(String[] threadIds) throws Exception {
-		JsonObject json = _getToJsonObject("https://platform.quip.com/1/threads/",
-				"ids=" + Stream.of(threadIds).collect(Collectors.joining(",")));
+		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/threads/")
+				.addParameter("ids", Stream.of(threadIds).collect(Collectors.joining(","))).build());
 		return json.keySet().stream().map(id -> new QuipThread(json.get(id).getAsJsonObject()))
 				.toArray(QuipThread[]::new);
 	}
@@ -169,13 +173,14 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public static QuipThread[] searchThreads(String query, Integer count, Boolean isOnlyMatchTitles) throws Exception {
-		String param = "query=" + URLEncoder.encode(query, "UTF-8");
+		List<NameValuePair> params = new ArrayList<>();
+		params.add(new BasicNameValuePair("query", query));
 		if (count != null)
-			param += "&count=" + count;
+			params.add(new BasicNameValuePair("count", String.valueOf(count)));
 		if (isOnlyMatchTitles != null)
-			param += "&only_match_titles=" + (isOnlyMatchTitles ? "True" : "False");
-
-		JsonArray arr = _getToJsonArray("https://platform.quip.com/1/threads/search", param);
+			params.add(new BasicNameValuePair("only_match_titles", String.valueOf(isOnlyMatchTitles)));
+		JsonArray arr = _getToJsonArray(
+				new URIBuilder("https://platform.quip.com/1/threads/search").addParameters(params).build());
 		return StreamSupport.stream(arr.spliterator(), false)
 				.map(obj -> new QuipThread(obj.getAsJsonObject()))
 				.toArray(QuipThread[]::new);
@@ -264,7 +269,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("location", String.valueOf(location._value));
 		}
 		if (isUpdateAutomatic != null)
-			form.add("update_automatic", isUpdateAutomatic ? "True" : "False");
+			form.add("update_automatic", String.valueOf(isUpdateAutomatic));
 		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/live-paste", form);
 		if (object == null)
 			return false;
@@ -282,7 +287,7 @@ public class QuipThread extends QuipJsonObject {
 		_postToJsonObject("https://platform.quip.com/1/threads/lock-edits",
 				Form.form()
 				.add("thread_id", getId())
-				.add("edits_disabled", isEditsDisabled ? "True" : "False"));
+				.add("edits_disabled", String.valueOf(isEditsDisabled)));
 	}
 
 	// ============================================
@@ -332,7 +337,7 @@ public class QuipThread extends QuipJsonObject {
 		if (parts != null)
 			form.add("parts", parts);
 		if (isSilent != null)
-			form.add("silent", isSilent ? "True" : "False");
+			form.add("silent", String.valueOf(isSilent));
 		if (blobIds != null)
 			form.add("attachments", Stream.of(blobIds).collect(Collectors.joining(",")));
 		if (annotationId != null)
@@ -395,17 +400,17 @@ public class QuipThread extends QuipJsonObject {
 		if (mode != null)
 			form.add("mode", mode._value);
 		if (allowExternalAccess != null)
-			form.add("allow_external_access", allowExternalAccess ? "True" : "False");
+			form.add("allow_external_access", String.valueOf(allowExternalAccess));
 		if (showConversation != null)
-			form.add("show_conversation", showConversation ? "True" : "False");
+			form.add("show_conversation", String.valueOf(showConversation));
 		if (showEditHistory != null)
-			form.add("show_edit_history", showEditHistory ? "True" : "False");
+			form.add("show_edit_history", String.valueOf(showEditHistory));
 		if (allowMessages != null)
-			form.add("allow_messages", allowMessages ? "True" : "False");
+			form.add("allow_messages", String.valueOf(allowMessages));
 		if (allowComments != null)
-			form.add("allow_comments", allowComments ? "True" : "False");
+			form.add("allow_comments", String.valueOf(allowComments));
 		if (enableRequestAccess != null)
-			form.add("enable_request_access", enableRequestAccess ? "True" : "False");
+			form.add("enable_request_access", String.valueOf(enableRequestAccess));
 		JsonObject json = _postToJsonObject("https://platform.quip.com/1/threads/edit-share-link-settings", form);
 		return json.get(getId()).getAsString().equals("success");
 	}
