@@ -1,4 +1,4 @@
-package quipapiclient;
+package kenichia.quip.api;
 
 import java.io.File;
 import java.time.Instant;

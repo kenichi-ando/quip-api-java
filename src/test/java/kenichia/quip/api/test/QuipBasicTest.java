@@ -1,4 +1,4 @@
-package quipapiclient.test;
+package kenichia.quip.api.test;
 
 import java.io.File;
 import java.util.Scanner;
@@ -6,12 +6,12 @@ import java.util.Scanner;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import quipapiclient.QuipBlob;
-import quipapiclient.QuipClient;
-import quipapiclient.QuipThread;
-import quipapiclient.QuipThread.Format;
-import quipapiclient.QuipThread.Type;
-import quipapiclient.QuipToken;
+import kenichia.quip.api.QuipBlob;
+import kenichia.quip.api.QuipClient;
+import kenichia.quip.api.QuipThread;
+import kenichia.quip.api.QuipToken;
+import kenichia.quip.api.QuipThread.Format;
+import kenichia.quip.api.QuipThread.Type;
 
 public class QuipBasicTest {
 	private static String QUIP_ACCESS_TOKEN;

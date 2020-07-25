@@ -1,4 +1,4 @@
-package quipapiclient.test;
+package kenichia.quip.api.test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -10,8 +10,8 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import quipapiclient.QuipClient;
-import quipapiclient.QuipWebSocket;
+import kenichia.quip.api.QuipClient;
+import kenichia.quip.api.QuipWebSocket;
 
 public class QuipWebSocketTest {
 	@BeforeAll
