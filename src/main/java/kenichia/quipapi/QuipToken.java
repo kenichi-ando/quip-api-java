@@ -1,4 +1,4 @@
-package kenichia.quip.api;
+package kenichia.quipapi;
 
 import com.google.gson.JsonObject;
 

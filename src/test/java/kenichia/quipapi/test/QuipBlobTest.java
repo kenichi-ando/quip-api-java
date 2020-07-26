@@ -1,4 +1,4 @@
-package kenichia.quip.api.test;
+package kenichia.quipapi.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,11 +9,11 @@ import java.io.File;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import kenichia.quip.api.QuipBlob;
-import kenichia.quip.api.QuipClient;
-import kenichia.quip.api.QuipThread;
-import kenichia.quip.api.QuipThread.Format;
-import kenichia.quip.api.QuipThread.Type;
+import kenichia.quipapi.QuipBlob;
+import kenichia.quipapi.QuipClient;
+import kenichia.quipapi.QuipThread;
+import kenichia.quipapi.QuipThread.Format;
+import kenichia.quipapi.QuipThread.Type;
 
 public class QuipBlobTest {
 	@BeforeAll

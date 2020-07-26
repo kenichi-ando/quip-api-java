@@ -1,4 +1,4 @@
-package kenichia.quip.api.test;
+package kenichia.quipapi.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import kenichia.quip.api.QuipClient;
-import kenichia.quip.api.QuipFolder;
-import kenichia.quip.api.QuipFolder.Color;
+import kenichia.quipapi.QuipClient;
+import kenichia.quipapi.QuipFolder;
+import kenichia.quipapi.QuipFolder.Color;
 
 public class QuipFolderTest {
 	@BeforeAll

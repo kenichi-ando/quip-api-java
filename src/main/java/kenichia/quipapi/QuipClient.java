@@ -1,4 +1,4 @@
-package kenichia.quip.api;
+package kenichia.quipapi;
 
 import java.io.IOException;
 import java.util.ArrayList;

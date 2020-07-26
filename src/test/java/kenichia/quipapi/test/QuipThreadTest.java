@@ -1,4 +1,4 @@
-package kenichia.quip.api.test;
+package kenichia.quipapi.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,14 +13,14 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import kenichia.quip.api.QuipClient;
-import kenichia.quip.api.QuipMessage;
-import kenichia.quip.api.QuipThread;
-import kenichia.quip.api.QuipThread.Format;
-import kenichia.quip.api.QuipThread.Frame;
-import kenichia.quip.api.QuipThread.Location;
-import kenichia.quip.api.QuipThread.Mode;
-import kenichia.quip.api.QuipThread.Type;
+import kenichia.quipapi.QuipClient;
+import kenichia.quipapi.QuipMessage;
+import kenichia.quipapi.QuipThread;
+import kenichia.quipapi.QuipThread.Format;
+import kenichia.quipapi.QuipThread.Frame;
+import kenichia.quipapi.QuipThread.Location;
+import kenichia.quipapi.QuipThread.Mode;
+import kenichia.quipapi.QuipThread.Type;
 
 public class QuipThreadTest {
 	@BeforeAll
