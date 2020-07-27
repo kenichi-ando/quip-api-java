@@ -1,5 +1,6 @@
 package kenichia.quipapi.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -13,7 +14,9 @@ import kenichia.quipapi.QuipUser;
 import kenichia.quipapi.QuipWebSocket;
 import kenichia.quipapi.QuipWebSocketEvent;
 
-public class QuipWebSocketTest {
+public class QuipWebSocketTest implements QuipWebSocketEvent {
+
+	private int aliveCounter = 0;
 
 	@BeforeAll
 	static void init() throws Exception {
@@ -28,14 +31,14 @@ public class QuipWebSocketTest {
 		assertFalse(qws.getUserId().isEmpty());
 		assertFalse(qws.getUrl().isEmpty());
 
-		qws.open(new QuipWebSocketEventImpl());
+		qws.open(this);
 		qws.checkAlive();
-		Thread.sleep(60000);
+		qws.checkAlive();
+		qws.checkAlive();
+		Thread.sleep(5000);
+		assertEquals(3, aliveCounter);
 		qws.close();
 	}
-}
-
-class QuipWebSocketEventImpl implements QuipWebSocketEvent {
 
 	@Override
 	public void onMessage(QuipMessage message, QuipUser user, QuipThread thread) {
@@ -45,6 +48,7 @@ class QuipWebSocketEventImpl implements QuipWebSocketEvent {
 	@Override
 	public void onAlive(String message) {
 		System.out.println("onAlive: " + message);
+		aliveCounter++;
 	}
 
 	@Override
