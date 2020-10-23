@@ -36,7 +36,7 @@ public class QuipThread extends QuipJsonObject {
 		}
 
 		private static Type find(String value) {
-			return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst().orElse(DOCUMENT);
+			return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst().orElse(null);
 		}
 	}
 
@@ -90,6 +90,17 @@ public class QuipThread extends QuipJsonObject {
 		}
 	};
 
+	public enum MessageType {
+		MESSAGE("message"),
+		EDIT("edit");
+
+		private final String _value;
+
+		private MessageType(String value) {
+			_value = value;
+		}
+	};
+
 	// ============================================
 	// Constructor
 	// ============================================
@@ -129,9 +140,13 @@ public class QuipThread extends QuipJsonObject {
 	public Type getType() {
 		return Type.find(_getString("thread", "type"));
 	}
-	
+
 	public String getAuthorId() {
 		return _getString("thread", "author_id");
+	}
+
+	public boolean isDeleted() {
+		return _getBoolean("thread", "is_deleted");
 	}
 
 	public String[] getSharedFolderIds() {
@@ -197,7 +212,7 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 	// Create / Update / Delete
 	// ============================================
-	
+
 	public static QuipThread createDocument(String title, String content, String[] memberIds, Format format, Type type) throws Exception {
 		Form form = Form.form();
 		if (title != null)
@@ -283,10 +298,22 @@ public class QuipThread extends QuipJsonObject {
 				.add("thread_id", getId()));
 	}
 
+	// ============================================
+	// Lock
+	// ============================================
+
 	public void lockEdits(Boolean isEditsDisabled) throws Exception {
 		_postToJsonObject("https://platform.quip.com/1/threads/lock-edits",
 				Form.form()
 				.add("thread_id", getId())
+				.add("edits_disabled", String.valueOf(isEditsDisabled)));
+	}
+
+	public void lockSectionEdits(String sectionId, Boolean isEditsDisabled) throws Exception {
+		_postToJsonObject("https://platform.quip.com/1/threads/lock-section-edits",
+				Form.form()
+				.add("thread_id", getId())
+				.add("section_id", sectionId)
 				.add("edits_disabled", String.valueOf(isEditsDisabled)));
 	}
 
@@ -321,8 +348,16 @@ public class QuipThread extends QuipJsonObject {
 	// Messages
 	// ============================================
 
-	public QuipMessage[] getRecentMessages() throws Exception {
-		JsonArray arr = _getToJsonArray("https://platform.quip.com/1/messages/" + getId());
+	public QuipMessage[] getRecentMessages(Integer count, Instant maxCreatedUsec, MessageType messageType) throws Exception {
+		List<NameValuePair> params = new ArrayList<>();
+		if (count != null)
+			params.add(new BasicNameValuePair("count", String.valueOf(count)));
+		if (maxCreatedUsec != null)
+			params.add(new BasicNameValuePair("max_created_usec", String.valueOf(maxCreatedUsec)));
+		if (messageType != null)
+			params.add(new BasicNameValuePair("message_type", messageType._value));
+		JsonArray arr = _getToJsonArray(
+				new URIBuilder("https://platform.quip.com/1/messages/" + getId()).addParameters(params).build());
 		return StreamSupport.stream(arr.spliterator(), false)
 				.map(obj -> new QuipMessage(obj.getAsJsonObject()))
 				.toArray(QuipMessage[]::new);

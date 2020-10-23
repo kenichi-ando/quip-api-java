@@ -15,10 +15,14 @@ import org.junit.jupiter.api.Test;
 
 import kenichia.quipapi.QuipBlob;
 import kenichia.quipapi.QuipClient;
+import kenichia.quipapi.QuipDiff;
+import kenichia.quipapi.QuipDiffGroup;
 import kenichia.quipapi.QuipMessage;
 import kenichia.quipapi.QuipThread;
 import kenichia.quipapi.QuipThread.Format;
 import kenichia.quipapi.QuipThread.Frame;
+import kenichia.quipapi.QuipThread.Location;
+import kenichia.quipapi.QuipThread.MessageType;
 import kenichia.quipapi.QuipThread.Type;
 
 public class QuipMessageTest {
@@ -26,6 +30,65 @@ public class QuipMessageTest {
 	static void init() throws Exception {
 		QuipClient.enableDebug(true);
 		QuipClient.setAccessToken(System.getenv("QUIP_ACCESS_TOKEN"));
+	}
+
+	@Test
+	void getRecentMessages() throws Exception {
+		QuipThread doc = QuipThread.createDocument("ドキュメント１🌈", "あいうえお🔥", null, Format.HTML, Type.DOCUMENT);
+		doc.addMessage(Frame.BUBBLE, "コメント１🔥", null, false, null, null, null);
+		doc.addMessage(Frame.LINE, "コメント２🔥", null, false, null, null, null);
+		doc.addMessage(Frame.CARD, "コメント３🔥", null, false, null, null, null);
+
+		QuipMessage[] msgs = doc.getRecentMessages(null, null, MessageType.MESSAGE);
+		assertEquals(3, msgs.length);
+		assertEquals("コメント３🔥", msgs[0].getText());
+		assertEquals("コメント２🔥", msgs[1].getText());
+		assertEquals("コメント１🔥", msgs[2].getText());
+		doc.delete();
+	}
+
+	@Test
+	void getRecentMessagesWithCount() throws Exception {
+		QuipThread doc = QuipThread.createDocument("ドキュメント１🌈", "あいうえお🔥", null, Format.HTML, Type.DOCUMENT);
+		doc.addMessage(Frame.BUBBLE, "コメント１🔥", null, false, null, null, null);
+		doc.addMessage(Frame.LINE, "コメント２🔥", null, false, null, null, null);
+		doc.addMessage(Frame.CARD, "コメント３🔥", null, false, null, null, null);
+
+		QuipMessage[] msgs = doc.getRecentMessages(2, null, MessageType.MESSAGE);
+		assertEquals(2, msgs.length);
+		assertEquals("コメント３🔥", msgs[0].getText());
+		assertEquals("コメント２🔥", msgs[1].getText());
+		doc.delete();
+	}
+
+	@Test
+	void getRecentEdits() throws Exception {
+		QuipThread doc = QuipThread.createDocument("テスト編集履歴🐯", "# タイトル１🐯", null, Format.MARKDOWN, Type.DOCUMENT);
+		doc.editDocument("アペンド１🐯", Format.HTML, null, Location.APPEND);
+		doc.editDocument("アペンド２🐯", Format.HTML, null, Location.APPEND);
+		doc.editDocument("アペンド３🐯", Format.HTML, null, Location.APPEND);
+		QuipMessage[] edits = doc.getRecentMessages(2, null, MessageType.EDIT);
+		assertEquals(1, edits.length);
+		QuipDiffGroup[] diffGroups = edits[0].getDiffGroups();
+		assertEquals(1, diffGroups.length);
+		QuipDiff[] diffs = diffGroups[0].getDiffs();
+		assertEquals(3, diffs.length);
+
+		assertTrue(diffs[0].getRtml().contains("アペンド１🐯"));
+		assertEquals(QuipDiff.DiffClass.INSERT_COMPLETELY, diffs[0].getDiffClass());
+		assertNotNull(diffs[0].getSectionId());
+		assertEquals("text_plain_style", diffs[0].getStyle());
+
+		assertTrue(diffs[1].getRtml().contains("アペンド２🐯"));
+		assertEquals(QuipDiff.DiffClass.INSERT_COMPLETELY, diffs[1].getDiffClass());
+		assertNotNull(diffs[1].getSectionId());
+		assertEquals("text_plain_style", diffs[1].getStyle());
+
+		assertTrue(diffs[2].getRtml().contains("アペンド３🐯"));
+		assertEquals(QuipDiff.DiffClass.INSERT_COMPLETELY, diffs[2].getDiffClass());
+		assertNotNull(diffs[2].getSectionId());
+		assertEquals("text_plain_style", diffs[2].getStyle());
+		doc.delete();
 	}
 
 	@Test
@@ -94,21 +157,6 @@ public class QuipMessageTest {
 		assertEquals("バブル３🐷", msg3.getText());
 		assertEquals(annotationId, msg3.getAnnotationId());
 		assertEquals(highlightSectionId, msg3.getHighlightSectionIds()[0]);
-		doc.delete();
-	}
-
-	@Test
-	void getRecentMessages() throws Exception {
-		QuipThread doc = QuipThread.createDocument("ドキュメント１🌈", "あいうえお🔥", null, Format.HTML, Type.DOCUMENT);
-		doc.addMessage(Frame.BUBBLE, "コメント１🔥", null, false, null, null, null);
-		doc.addMessage(Frame.LINE, "コメント２🔥", null, false, null, null, null);
-		doc.addMessage(Frame.CARD, "コメント３🔥", null, false, null, null, null);
-
-		QuipMessage[] msgs = doc.getRecentMessages();
-		assertEquals(3, msgs.length);
-		assertEquals("コメント３🔥", msgs[0].getText());
-		assertEquals("コメント２🔥", msgs[1].getText());
-		assertEquals("コメント１🔥", msgs[2].getText());
 		doc.delete();
 	}
 

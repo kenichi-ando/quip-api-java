@@ -46,17 +46,25 @@ class QuipJsonObject extends QuipAccess {
 
 	protected boolean _getBoolean(String key) {
 		JsonElement element = _jsonObject.get(key);
-		return (element == null) ? null : element.getAsBoolean();
+		return (element == null) ? false : element.getAsBoolean();
+	}
+
+	protected boolean _getBoolean(String keyToJsonObject, String keyToBoolean) {
+		JsonObject object = _getJsonObject(keyToJsonObject);
+		if (object == null)
+			return false;
+		JsonElement element = object.get(keyToBoolean);
+		return (element == null) ? false : element.getAsBoolean();
 	}
 
 	protected int _getInt(String key) {
 		JsonElement element = _jsonObject.get(key);
-		return (element == null) ? null : element.getAsInt();
+		return (element == null) ? 0 : element.getAsInt();
 	}
 
 	protected double _getDouble(String key) {
 		JsonElement element = _jsonObject.get(key);
-		return (element == null) ? null : element.getAsDouble();
+		return (element == null) ? 0.0 : element.getAsDouble();
 	}
 
 	protected JsonObject _getJsonObject(String key) {

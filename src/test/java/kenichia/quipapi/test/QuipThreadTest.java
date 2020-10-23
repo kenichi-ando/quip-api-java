@@ -68,6 +68,7 @@ public class QuipThreadTest {
 		assertEquals(0, doc.getSharedFolderIds().length);
 		assertEquals(1, doc.getUserIds().length);
 		assertEquals(1, doc.getExpandedUserIds().length);
+        assertEquals(false, doc.isDeleted());
 		doc.delete();
 	}
 
@@ -157,7 +158,7 @@ public class QuipThreadTest {
 
 	@Test
 	void editDocumentWithLocation() throws Exception {
-		QuipThread doc = QuipThread.createDocument("テスト🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+		QuipThread doc = QuipThread.createDocument("テスト編集🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
 		List<String> sectionIds = getSectionIds(doc);
 		doc.editDocument("アペンド🐷", Format.HTML, null, Location.APPEND);
 		doc.editDocument("プリペンド🐷", Format.HTML, null, Location.PREPEND);
@@ -204,6 +205,21 @@ public class QuipThreadTest {
 		fileOuputStream.close();
 		thread.delete();
 	}
+
+    @Test
+    void testLockSection() throws Exception {
+        QuipThread thread = QuipThread.createDocument("テストロックセクション🐷", "# タイトル１🐷\n## セクション１🐷\n## セクション２🐷\n## セクション３🐷", null, Format.MARKDOWN, Type.DOCUMENT);
+        List<String> sectionIds = getSectionIds(thread);
+        thread.lockSectionEdits(sectionIds.get(1), true);
+        thread.editDocument("変更１🐄", Format.HTML, sectionIds.get(1), Location.REPLACE_SECTION);
+        assertTrue(thread.getHtml().contains("セクション１🐷"));
+        assertFalse(thread.getHtml().contains("変更１🐄"));
+        thread.lockSectionEdits(sectionIds.get(1), false);
+        thread.editDocument("変更２🐄", Format.HTML, sectionIds.get(1), Location.REPLACE_SECTION);
+        assertFalse(thread.getHtml().contains("セクション１🐷"));
+        assertTrue(thread.getHtml().contains("変更２🐄"));
+        thread.delete();
+    }
 
 	private List<String> getSectionIds(QuipThread doc) {
 		String html = doc.getHtml();

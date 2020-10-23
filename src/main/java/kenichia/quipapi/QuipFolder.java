@@ -38,7 +38,7 @@ public class QuipFolder extends QuipJsonObject {
 		}
 
 		private static Color find(String value) {
-			return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst().orElse(MANILA);
+			return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst().orElse(null);
 		}
 	}
 

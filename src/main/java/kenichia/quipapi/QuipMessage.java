@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class QuipMessage extends QuipJsonObject {
-	
+
 	// ============================================
 	// Constructor
 	// ============================================
@@ -67,5 +67,15 @@ public class QuipMessage extends QuipJsonObject {
 		return StreamSupport.stream(arr.spliterator(), false)
 				.map(e -> e.getAsJsonObject().get("name").getAsString())
 				.toArray(String[]::new);
+	}
+
+	public QuipDiffGroup[] getDiffGroups() {
+		JsonArray arr = _getJsonArray("diff_groups");
+		if (arr == null)
+			return null;
+		QuipDiffGroup[] diffGroups = StreamSupport.stream(arr.spliterator(), false)
+				.map(obj -> new QuipDiffGroup(obj.getAsJsonObject()))
+				.toArray(QuipDiffGroup[]::new);
+		return diffGroups;
 	}
 }
