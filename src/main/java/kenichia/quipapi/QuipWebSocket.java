@@ -69,7 +69,7 @@ public class QuipWebSocket extends QuipJsonObject implements Listener {
 	// ============================================
 
 	public static QuipWebSocket create() throws Exception {
-		return new QuipWebSocket(_getToJsonObject("https://platform.quip.com/1/websockets/new"));
+		return new QuipWebSocket(_getToJsonObject(QuipAccess.ENDPOINT + "/websockets/new"));
 	}
 
 	// ============================================

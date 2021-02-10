@@ -127,18 +127,18 @@ public class QuipFolder extends QuipJsonObject {
 	// ============================================
 
 	public static QuipFolder getFolder(String folderId) throws Exception {
-		return new QuipFolder(_getToJsonObject("https://platform.quip.com/1/folders/" + folderId));
+		return new QuipFolder(_getToJsonObject(QuipAccess.ENDPOINT + "/folders/" + folderId));
 	}
 
 	public static QuipFolder[] getFolders(String[] folderIds) throws Exception {
-		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/folders/")
+		JsonObject json = _getToJsonObject(new URIBuilder(QuipAccess.ENDPOINT + "/folders/")
 				.addParameter("ids", Stream.of(folderIds).collect(Collectors.joining(","))).build());
 		return json.keySet().stream().map(id -> new QuipFolder(json.get(id).getAsJsonObject()))
 				.toArray(QuipFolder[]::new);
 	}
 
 	public boolean reload() throws Exception {
-		JsonObject object = _getToJsonObject("https://platform.quip.com/1/folders/" + getId());
+		JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/folders/" + getId());
 		if (object == null)
 			return false;
 		_replace(object);
@@ -159,7 +159,7 @@ public class QuipFolder extends QuipJsonObject {
 			form.add("parent_id", parentId);
 		if (memberIds != null)
 			form.add("member_ids", Stream.of(memberIds).collect(Collectors.joining(",")));
-		return new QuipFolder(_postToJsonObject("https://platform.quip.com/1/folders/new", form));
+		return new QuipFolder(_postToJsonObject(QuipAccess.ENDPOINT + "/folders/new", form));
 	}
 
 	public boolean update(String title, Color color) throws Exception {
@@ -168,7 +168,7 @@ public class QuipFolder extends QuipJsonObject {
 			form.add("title", title);
 		if (color != null)
 			form.add("color", color._value);
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/update", form);
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/folders/update", form);
 		if (object == null)
 			return false;
 		_replace(object);
@@ -184,7 +184,7 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public boolean addMembers(String[] userIds) throws Exception {
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/add-members",
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/folders/add-members",
 				Form.form()
 				.add("folder_id", getId())
 				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));
@@ -199,7 +199,7 @@ public class QuipFolder extends QuipJsonObject {
 	}
 
 	public boolean removeMembers(String[] userIds) throws Exception {
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/folders/remove-members",
 				Form.form()
 				.add("folder_id", getId())
 				.add("member_ids", Stream.of(userIds).collect(Collectors.joining(","))));

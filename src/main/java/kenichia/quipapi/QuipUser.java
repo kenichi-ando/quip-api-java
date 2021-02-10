@@ -102,15 +102,15 @@ public class QuipUser extends QuipJsonObject {
 	// ============================================
 
 	public static QuipUser getCurrentUser() throws Exception {
-		return new QuipUser(_getToJsonObject("https://platform.quip.com/1/users/current"));
+		return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/current"));
 	}
 
 	public static QuipUser getUser(String userIdOrEmail) throws Exception {
-		return new QuipUser(_getToJsonObject("https://platform.quip.com/1/users/" + userIdOrEmail));
+		return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/" + userIdOrEmail));
 	}
 
 	public static QuipUser[] getUsers(String[] userIdOrEmails) throws Exception {
-		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/users/")
+		JsonObject json = _getToJsonObject(new URIBuilder(QuipAccess.ENDPOINT + "/users/")
 				.addParameter("ids", Stream.of(userIdOrEmails).collect(Collectors.joining(","))).build());
 		return json.keySet().stream()
 				.map(id -> new QuipUser(json.get(id).getAsJsonObject()))
@@ -118,14 +118,14 @@ public class QuipUser extends QuipJsonObject {
 	}
 
 	public static QuipUser[] getContacts() throws Exception {
-		JsonArray json = _getToJsonArray("https://platform.quip.com/1/users/contacts");
+		JsonArray json = _getToJsonArray(QuipAccess.ENDPOINT + "/users/contacts");
 		return StreamSupport.stream(json.spliterator(), false)
 				.map(obj -> new QuipUser(obj.getAsJsonObject()))
 				.toArray(QuipUser[]::new);
 	}
 
 	public boolean reload() throws Exception {
-		JsonObject object = _getToJsonObject("https://platform.quip.com/1/users/" + getId());
+		JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/users/" + getId());
 		if (object == null)
 			return false;
 		_replace(object);
@@ -140,7 +140,7 @@ public class QuipUser extends QuipJsonObject {
 		Form form = Form.form()
 				.add("user_id", getId())
 				.add("profile_picture_url", profilePictureUrl);
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/users/update", form);
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/users/update", form);
 		if (object == null)
 			return false;
 		_replace(object);

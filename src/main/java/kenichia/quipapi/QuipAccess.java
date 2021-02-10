@@ -18,6 +18,8 @@ import com.google.gson.JsonObject;
 
 class QuipAccess {
 
+	static public String ENDPOINT = "https://platform.quip.com/1";
+
 	// ============================================
 	// Protected
 	// ============================================
@@ -134,10 +136,10 @@ class QuipAccess {
 	private static boolean _checkError(JsonObject json) {
 		if (json.get("error") == null)
 			return false;
-		System.out.println("Error> "
-				+ json.get("error_code").getAsString() + " "
-				+ json.get("error").getAsString() + " ("
-				+ json.get("error_description").getAsString() + ")");
+		String errorCode = (json.get("error_code") != null) ? json.get("error_code").getAsString() : "";
+		String error = (json.get("error") != null) ? json.get("error").getAsString() : "";
+		String errorDescription = (json.get("error_description") != null) ? json.get("error_description").getAsString() : "";
+		System.out.println("Error> " + errorCode + " "+ error + " (" + errorDescription + ")");
 		return true;
 	}
 }

@@ -170,18 +170,18 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 
 	public static QuipThread getThread(String threadId) throws Exception {
-		return new QuipThread(_getToJsonObject("https://platform.quip.com/1/threads/" + threadId));
+		return new QuipThread(_getToJsonObject(QuipAccess.ENDPOINT + "/threads/" + threadId));
 	}
 
 	public static QuipThread[] getThreads(String[] threadIds) throws Exception {
-		JsonObject json = _getToJsonObject(new URIBuilder("https://platform.quip.com/1/threads/")
+		JsonObject json = _getToJsonObject(new URIBuilder(QuipAccess.ENDPOINT + "/threads/")
 				.addParameter("ids", Stream.of(threadIds).collect(Collectors.joining(","))).build());
 		return json.keySet().stream().map(id -> new QuipThread(json.get(id).getAsJsonObject()))
 				.toArray(QuipThread[]::new);
 	}
 
 	public static QuipThread[] getRecentThreads() throws Exception {
-		JsonObject json = _getToJsonObject("https://platform.quip.com/1/threads/recent");
+		JsonObject json = _getToJsonObject(QuipAccess.ENDPOINT + "/threads/recent");
 		return StreamSupport.stream(json.entrySet().spliterator(), false)
 				.map(obj -> new QuipThread((JsonObject) obj.getValue()))
 				.toArray(QuipThread[]::new);
@@ -195,14 +195,14 @@ public class QuipThread extends QuipJsonObject {
 		if (isOnlyMatchTitles != null)
 			params.add(new BasicNameValuePair("only_match_titles", String.valueOf(isOnlyMatchTitles)));
 		JsonArray arr = _getToJsonArray(
-				new URIBuilder("https://platform.quip.com/1/threads/search").addParameters(params).build());
+				new URIBuilder(QuipAccess.ENDPOINT + "/threads/search").addParameters(params).build());
 		return StreamSupport.stream(arr.spliterator(), false)
 				.map(obj -> new QuipThread(obj.getAsJsonObject()))
 				.toArray(QuipThread[]::new);
 	}
 
 	public boolean reload() throws Exception {
-		JsonObject object = _getToJsonObject("https://platform.quip.com/1/threads/" + getId());
+		JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/threads/" + getId());
 		if (object == null)
 			return false;
 		_replace(object);
@@ -225,7 +225,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("format", format._value);
 		if (type != null)
 			form.add("type", type._value);
-		return new QuipThread(_postToJsonObject("https://platform.quip.com/1/threads/new-document", form));
+		return new QuipThread(_postToJsonObject(QuipAccess.ENDPOINT + "/threads/new-document", form));
 	}
 	
 	public static QuipThread createChat(String title, String message, String[] memberIds) throws Exception {
@@ -236,7 +236,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("message", message);
 		if (memberIds != null)
 			form.add("member_ids", Stream.of(memberIds).collect(Collectors.joining(",")));
-		return new QuipThread(_postToJsonObject("https://platform.quip.com/1/threads/new-chat", form));
+		return new QuipThread(_postToJsonObject(QuipAccess.ENDPOINT + "/threads/new-chat", form));
 	}
 
 	public QuipThread copyDocument(String title, String values, String[] memberIds, String[] folderIds) throws Exception {
@@ -249,7 +249,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("member_ids", Stream.of(memberIds).collect(Collectors.joining(",")));
 		if (folderIds != null)
 			form.add("folder_ids", Stream.of(folderIds).collect(Collectors.joining(",")));
-		return new QuipThread(_postToJsonObject("https://platform.quip.com/1/threads/copy-document", form));
+		return new QuipThread(_postToJsonObject(QuipAccess.ENDPOINT + "/threads/copy-document", form));
 	}
 
 	public boolean editDocument(String content, Format format, String sectionId, Location location) throws Exception {
@@ -262,7 +262,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("section_id", sectionId);
 		if (location != null)
 			form.add("location", String.valueOf(location._value));
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/edit-document", form);
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/edit-document", form);
 		if (object == null)
 			return false;
 		_replace(object);
@@ -285,7 +285,7 @@ public class QuipThread extends QuipJsonObject {
 		}
 		if (isUpdateAutomatic != null)
 			form.add("update_automatic", String.valueOf(isUpdateAutomatic));
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/live-paste", form);
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/live-paste", form);
 		if (object == null)
 			return false;
 		_replace(object);
@@ -293,7 +293,7 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public void delete() throws Exception {
-		_postToJsonObject("https://platform.quip.com/1/threads/delete",
+		_postToJsonObject(QuipAccess.ENDPOINT + "/threads/delete",
 				Form.form()
 				.add("thread_id", getId()));
 	}
@@ -303,14 +303,14 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 
 	public void lockEdits(Boolean isEditsDisabled) throws Exception {
-		_postToJsonObject("https://platform.quip.com/1/threads/lock-edits",
+		_postToJsonObject(QuipAccess.ENDPOINT + "/threads/lock-edits",
 				Form.form()
 				.add("thread_id", getId())
 				.add("edits_disabled", String.valueOf(isEditsDisabled)));
 	}
 
 	public void lockSectionEdits(String sectionId, Boolean isEditsDisabled) throws Exception {
-		_postToJsonObject("https://platform.quip.com/1/threads/lock-section-edits",
+		_postToJsonObject(QuipAccess.ENDPOINT + "/threads/lock-section-edits",
 				Form.form()
 				.add("thread_id", getId())
 				.add("section_id", sectionId)
@@ -329,19 +329,37 @@ public class QuipThread extends QuipJsonObject {
 			multipart.addTextBody("title", title);
 		if (memberIds != null)
 			multipart.addTextBody("member_ids", Stream.of(memberIds).collect(Collectors.joining(",")));
-		return new QuipThread(_postToJsonObject("https://platform.quip.com/1/threads/import-file", multipart));
+		return new QuipThread(_postToJsonObject(QuipAccess.ENDPOINT + "/threads/import-file", multipart));
 	}
 
 	public byte[] exportAsDocx() throws Exception {
-		return _getToByteArray("https://platform.quip.com/1/threads/" + getId() + "/export/docx");
+		return _getToByteArray(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/docx");
 	}
 
 	public byte[] exportAsXlsx() throws Exception {
-		return _getToByteArray("https://platform.quip.com/1/threads/" + getId() + "/export/xlsx");
+		return _getToByteArray(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/xlsx");
 	}
 
 	public byte[] exportAsPdf() throws Exception {
-		return _getToByteArray("https://platform.quip.com/1/threads/" + getId() + "/export/pdf");
+		return _getToByteArray(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/pdf");
+	}
+
+	public String createExportPdfRequest(String destinationThreadId) throws Exception {
+		Form form = Form.form();
+		if (destinationThreadId != null)
+			form.add("destination_thread_id", destinationThreadId);
+		JsonObject json = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/pdf/async", form);
+		return json.get("request_id").getAsString();
+	}
+
+	public String retrieveExportPdfResponse(String requestId) throws Exception {
+		List<NameValuePair> params = new ArrayList<>();
+		if (requestId != null)
+			params.add(new BasicNameValuePair("request_id", requestId));
+		JsonObject json = _getToJsonObject(
+				new URIBuilder(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/pdf/async")
+				.addParameters(params).build());
+		return json.get("status").getAsString().equals("SUCCESS") ? json.get("pdf_url").getAsString() : null;
 	}
 
 	// ============================================
@@ -357,7 +375,7 @@ public class QuipThread extends QuipJsonObject {
 		if (messageType != null)
 			params.add(new BasicNameValuePair("message_type", messageType._value));
 		JsonArray arr = _getToJsonArray(
-				new URIBuilder("https://platform.quip.com/1/messages/" + getId()).addParameters(params).build());
+				new URIBuilder(QuipAccess.ENDPOINT + "/messages/" + getId()).addParameters(params).build());
 		return StreamSupport.stream(arr.spliterator(), false)
 				.map(obj -> new QuipMessage(obj.getAsJsonObject()))
 				.toArray(QuipMessage[]::new);
@@ -379,7 +397,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("annotation_id", annotationId);
 		if (sectionId != null)
 			form.add("section_id", sectionId);
-		return new QuipMessage(_postToJsonObject("https://platform.quip.com/1/messages/new", form));
+		return new QuipMessage(_postToJsonObject(QuipAccess.ENDPOINT + "/messages/new", form));
 	}
 
 	// ============================================
@@ -387,11 +405,11 @@ public class QuipThread extends QuipJsonObject {
 	// ============================================
 
 	public byte[] getBlob(String blobId) throws Exception {
-		return _getToByteArray("https://platform.quip.com/1/blob/" + getId() + "/" + blobId);
+		return _getToByteArray(QuipAccess.ENDPOINT + "/blob/" + getId() + "/" + blobId);
 	}
 
 	public QuipBlob addBlob(File file) throws Exception {
-		return new QuipBlob(_postToJsonObject("https://platform.quip.com/1/blob/" + getId(),
+		return new QuipBlob(_postToJsonObject(QuipAccess.ENDPOINT + "/blob/" + getId(),
 				MultipartEntityBuilder.create().addBinaryBody("blob", file)));
 	}
 
@@ -404,7 +422,7 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public boolean addMembers(String[] folderOrUserIds) throws Exception {
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/threads/add-members",
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/add-members",
 				Form.form()
 				.add("thread_id", getId())
 				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
@@ -419,7 +437,7 @@ public class QuipThread extends QuipJsonObject {
 	}
 
 	public boolean removeMembers(String[] folderOrUserIds) throws Exception {
-		JsonObject object = _postToJsonObject("https://platform.quip.com/1/folders/remove-members",
+		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/folders/remove-members",
 				Form.form()
 				.add("thread_id", getId())
 				.add("member_ids", Stream.of(folderOrUserIds).collect(Collectors.joining(","))));
@@ -446,7 +464,7 @@ public class QuipThread extends QuipJsonObject {
 			form.add("allow_comments", String.valueOf(allowComments));
 		if (enableRequestAccess != null)
 			form.add("enable_request_access", String.valueOf(enableRequestAccess));
-		JsonObject json = _postToJsonObject("https://platform.quip.com/1/threads/edit-share-link-settings", form);
+		JsonObject json = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/edit-share-link-settings", form);
 		return json.get(getId()).getAsString().equals("success");
 	}
 }
