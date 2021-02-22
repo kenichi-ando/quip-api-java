@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Kenichi Ando
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package kenichia.quipapi;
 
 import java.io.File;
@@ -13,6 +28,9 @@ import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -466,5 +484,33 @@ public class QuipThread extends QuipJsonObject {
 			form.add("enable_request_access", String.valueOf(enableRequestAccess));
 		JsonObject json = _postToJsonObject(QuipAccess.ENDPOINT + "/threads/edit-share-link-settings", form);
 		return json.get(getId()).getAsString().equals("success");
+	}
+
+	// ============================================
+	// Table
+	// ============================================
+
+	public String[] getTableIds() {
+		String html = getHtml();
+		if (html == null)
+			return null;
+		Elements tables = Jsoup.parse(html).getElementsByTag("table");
+		if (tables == null)
+			return null;
+		return tables.stream().map(e -> e.attr("id")).toArray(String[]::new);
+	}
+
+	public QuipTable getTableById(String tableId) {
+		Element table = getTableElementById_(tableId);
+		if (table == null)
+			return null;
+		return new QuipTable(this, table);
+	}
+
+	Element getTableElementById_(String tableId) {
+		String html = getHtml();
+		if (html == null)
+			return null;
+		return Jsoup.parse(html).getElementsByAttributeValue("id", tableId).first();
 	}
 }
