@@ -15,150 +15,147 @@
  */
 package kenichia.quipapi;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 public class QuipUser extends QuipJsonObject {
 
-	// ============================================
-	// Constructor
-	// ============================================
+  // ============================================
+  // Constructor
+  // ============================================
 
-	protected QuipUser(JsonObject json) {
-		super(json);
-	}
-	
-	// ============================================
-	// Properties
-	// ============================================
+  protected QuipUser(JsonObject json) {
+    super(json);
+  }
 
-	public String getId() {
-		return _getString("id");
-	}
+  // ============================================
+  // Properties
+  // ============================================
 
-	public String getName() {
-		return _getString("name");
-	}
+  public String getId() {
+    return _getString("id");
+  }
 
-	public double getAffinity() {
-		return _getDouble("affinity");
-	}
+  public String getName() {
+    return _getString("name");
+  }
 
-	public String getProfilePictureUrl() {
-		return _getString("profile_picture_url");
-	}
+  public double getAffinity() {
+    return _getDouble("affinity");
+  }
 
-	public String getChatThreadId() {
-		return _getString("chat_thread_id");
-	}
+  public String getProfilePictureUrl() {
+    return _getString("profile_picture_url");
+  }
 
-	public String getDesktopFolderId() {
-		return _getString("desktop_folder_id");
-	}
+  public String getChatThreadId() {
+    return _getString("chat_thread_id");
+  }
 
-	public String getArchiveFolderId() {
-		return _getString("archive_folder_id");
-	}
+  public String getDesktopFolderId() {
+    return _getString("desktop_folder_id");
+  }
 
-	public String getStarredFolderId() {
-		return _getString("starred_folder_id");
-	}
+  public String getArchiveFolderId() {
+    return _getString("archive_folder_id");
+  }
 
-	public String getPrivateFolderId() {
-		return _getString("private_folder_id");
-	}
+  public String getStarredFolderId() {
+    return _getString("starred_folder_id");
+  }
 
-	public String getTrashFolderId() {
-		return _getString("trash_folder_id");
-	}
+  public String getPrivateFolderId() {
+    return _getString("private_folder_id");
+  }
 
-	public String[] getGroupFolderIds() {
-		return _getStringArray("group_folder_ids");
-	}
+  public String getTrashFolderId() {
+    return _getString("trash_folder_id");
+  }
 
-	public String[] getSharedFolderIds() {
-		return _getStringArray("shared_folder_ids");
-	}
+  public String[] getGroupFolderIds() {
+    return _getStringArray("group_folder_ids");
+  }
 
-	public boolean isDisabled() {
-		return _getBoolean("disabled");
-	}
+  public String[] getSharedFolderIds() {
+    return _getStringArray("shared_folder_ids");
+  }
 
-	public Instant getCreatedUsec() {
-		return _getInstant("created_usec");
-	}
+  public boolean isDisabled() {
+    return _getBoolean("disabled");
+  }
 
-	public String[] getEmails() {
-		return _getStringArray("emails");
-	}
+  public Instant getCreatedUsec() {
+    return _getInstant("created_usec");
+  }
 
-	public String getSubDomain() {
-		return _getString("subdomain");
-	}
+  public String[] getEmails() {
+    return _getStringArray("emails");
+  }
 
-	public String getUrl() {
-		return _getString("url");
-	}
+  public String getSubDomain() {
+    return _getString("subdomain");
+  }
 
-	public boolean isRobot() {
-		return _getBoolean("is_robot");
-	}
+  public String getUrl() {
+    return _getString("url");
+  }
 
-	// ============================================
-	// Read
-	// ============================================
+  public boolean isRobot() {
+    return _getBoolean("is_robot");
+  }
 
-	public static QuipUser getCurrentUser() throws Exception {
-		return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/current"));
-	}
+  // ============================================
+  // Read
+  // ============================================
 
-	public static QuipUser getUser(String userIdOrEmail) throws Exception {
-		return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/" + userIdOrEmail));
-	}
+  public static QuipUser getCurrentUser() throws Exception {
+    return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/current"));
+  }
 
-	public static QuipUser[] getUsers(String[] userIdOrEmails) throws Exception {
-		JsonObject json = _getToJsonObject(new URIBuilder(QuipAccess.ENDPOINT + "/users/")
-				.addParameter("ids", Stream.of(userIdOrEmails).collect(Collectors.joining(","))).build());
-		return json.keySet().stream()
-				.map(id -> new QuipUser(json.get(id).getAsJsonObject()))
-				.toArray(QuipUser[]::new);
-	}
+  public static QuipUser getUser(String userIdOrEmail) throws Exception {
+    return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/" + userIdOrEmail));
+  }
 
-	public static QuipUser[] getContacts() throws Exception {
-		JsonArray json = _getToJsonArray(QuipAccess.ENDPOINT + "/users/contacts");
-		return StreamSupport.stream(json.spliterator(), false)
-				.map(obj -> new QuipUser(obj.getAsJsonObject()))
-				.toArray(QuipUser[]::new);
-	}
+  public static QuipUser[] getUsers(String[] userIdOrEmails) throws Exception {
+    JsonObject json =
+        _getToJsonObject(
+            new URIBuilder(QuipAccess.ENDPOINT + "/users/")
+                .addParameter("ids", Stream.of(userIdOrEmails).collect(Collectors.joining(",")))
+                .build());
+    return json.keySet().stream()
+        .map(id -> new QuipUser(json.get(id).getAsJsonObject()))
+        .toArray(QuipUser[]::new);
+  }
 
-	public boolean reload() throws Exception {
-		JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/users/" + getId());
-		if (object == null)
-			return false;
-		_replace(object);
-		return true;
-	}
+  public static QuipUser[] getContacts() throws Exception {
+    JsonArray json = _getToJsonArray(QuipAccess.ENDPOINT + "/users/contacts");
+    return StreamSupport.stream(json.spliterator(), false)
+        .map(obj -> new QuipUser(obj.getAsJsonObject()))
+        .toArray(QuipUser[]::new);
+  }
 
-	// ============================================
-	// Update
-	// ============================================
-	
-	public boolean update(String profilePictureUrl) throws Exception {
-		Form form = Form.form()
-				.add("user_id", getId())
-				.add("profile_picture_url", profilePictureUrl);
-		JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/users/update", form);
-		if (object == null)
-			return false;
-		_replace(object);
-		return true;
-	}
+  public boolean reload() throws Exception {
+    JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/users/" + getId());
+    if (object == null) return false;
+    _replace(object);
+    return true;
+  }
+
+  // ============================================
+  // Update
+  // ============================================
+
+  public boolean update(String profilePictureUrl) throws Exception {
+    Form form = Form.form().add("user_id", getId()).add("profile_picture_url", profilePictureUrl);
+    JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/users/update", form);
+    if (object == null) return false;
+    _replace(object);
+    return true;
+  }
 }

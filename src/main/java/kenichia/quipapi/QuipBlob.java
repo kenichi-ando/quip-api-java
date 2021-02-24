@@ -19,23 +19,23 @@ import com.google.gson.JsonObject;
 
 public class QuipBlob extends QuipJsonObject {
 
-	// ============================================
-	// Constructor
-	// ============================================
+  // ============================================
+  // Constructor
+  // ============================================
 
-	protected QuipBlob(JsonObject json) {
-		super(json);
-	}
+  protected QuipBlob(JsonObject json) {
+    super(json);
+  }
 
-	// ============================================
-	// Properties
-	// ============================================
+  // ============================================
+  // Properties
+  // ============================================
 
-	public String getId() {
-		return _getString("id");
-	}
+  public String getId() {
+    return _getString("id");
+  }
 
-	public String getUrl() {
-		return _getString("url");
-	}
+  public String getUrl() {
+    return _getString("url");
+  }
 }
