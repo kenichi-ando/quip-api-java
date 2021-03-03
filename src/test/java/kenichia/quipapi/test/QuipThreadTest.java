@@ -265,6 +265,28 @@ public class QuipThreadTest {
   }
 
   @Test
+  void testExportPdfRequest() throws Exception {
+    QuipThread thread =
+        QuipThread.createDocument(
+            "PDFエクスポートテスト🔥", "あいうえお🌈🌈🌈", null, Format.HTML, Type.DOCUMENT);
+    QuipThread dest =
+        QuipThread.createDocument("PDFリンク先🔥", "あいうえお🌈🌈🌈", null, Format.HTML, Type.DOCUMENT);
+    String requestId = thread.createExportPdfRequest(dest.getId());
+    boolean retrieved = false;
+    for (int i = 0; i < 10; i++) {
+      Thread.sleep(5000);
+      String url = thread.retrieveExportPdfResponse(requestId);
+      if (url != null) {
+        retrieved = true;
+        break;
+      }
+    }
+    assertTrue(retrieved);
+    thread.delete();
+    dest.delete();
+  }
+
+  @Test
   void testLockSection() throws Exception {
     QuipThread thread =
         QuipThread.createDocument(
