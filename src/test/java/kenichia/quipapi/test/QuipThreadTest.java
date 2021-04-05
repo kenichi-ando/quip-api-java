@@ -24,6 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipMessage;
 import kenichia.quipapi.QuipThread;
@@ -32,8 +36,6 @@ import kenichia.quipapi.QuipThread.Frame;
 import kenichia.quipapi.QuipThread.Location;
 import kenichia.quipapi.QuipThread.Mode;
 import kenichia.quipapi.QuipThread.Type;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 public class QuipThreadTest {
   @BeforeAll
@@ -222,26 +224,29 @@ public class QuipThreadTest {
     List<String> srcSecIds = getSectionIds(srcDoc);
     List<String> dstSecIds = getSectionIds(dstDoc);
     dstDoc.createLivePasteSection(
-        srcDoc.getId(), new String[] {srcSecIds.get(1)}, dstSecIds.get(1), Location.APPEND, true);
+        srcDoc.getId(), false, new String[] {srcSecIds.get(1)}, Location.APPEND, dstSecIds.get(1), true);
     dstDoc.createLivePasteSection(
-        srcDoc.getId(), new String[] {srcSecIds.get(1)}, dstSecIds.get(1), Location.PREPEND, true);
+        srcDoc.getId(), false, new String[] {srcSecIds.get(1)}, Location.PREPEND, dstSecIds.get(1), true);
     dstDoc.createLivePasteSection(
         srcDoc.getId(),
+        false,
         new String[] {srcSecIds.get(2)},
-        dstSecIds.get(2),
         Location.AFTER_SECTION,
-        true);
-    dstDoc.createLivePasteSection(
-        srcDoc.getId(),
-        new String[] {srcSecIds.get(2)},
         dstSecIds.get(2),
-        Location.BEFORE_SECTION,
         true);
     dstDoc.createLivePasteSection(
         srcDoc.getId(),
+        false,
+        new String[] {srcSecIds.get(2)},
+        Location.BEFORE_SECTION,
+        dstSecIds.get(2),
+        true);
+    dstDoc.createLivePasteSection(
+        srcDoc.getId(),
+        false,
         new String[] {srcSecIds.get(3)},
-        dstSecIds.get(3),
         Location.REPLACE_SECTION,
+        dstSecIds.get(3),
         true);
     srcDoc.editDocument("変更🐄１", Format.HTML, Location.REPLACE_SECTION, srcSecIds.get(1));
     srcDoc.editDocument("変更🐄２", Format.HTML, Location.REPLACE_SECTION, srcSecIds.get(2));

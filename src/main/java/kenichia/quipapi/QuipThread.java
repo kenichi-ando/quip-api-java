@@ -15,8 +15,6 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
@@ -32,6 +31,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class QuipThread extends QuipJsonObject {
 
@@ -398,7 +400,7 @@ public class QuipThread extends QuipJsonObject {
             new URIBuilder(QuipAccess.ENDPOINT + "/threads/" + getId() + "/export/pdf/async")
                 .addParameters(params)
                 .build());
-    return json.get("status").getAsString().equals("SUCCESS")
+    return (json.get("status").getAsString().equals("SUCCESS") || json.get("status").getAsString().equals("PARTIAL_SUCCESS"))
         ? json.get("pdf_url").getAsString()
         : null;
   }
