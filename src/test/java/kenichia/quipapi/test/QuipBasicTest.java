@@ -17,14 +17,16 @@ package kenichia.quipapi.test;
 
 import java.io.File;
 import java.util.Scanner;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import kenichia.quipapi.QuipBlob;
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipThread;
 import kenichia.quipapi.QuipThread.Format;
 import kenichia.quipapi.QuipThread.Type;
 import kenichia.quipapi.QuipToken;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 public class QuipBasicTest {
   private static String QUIP_ACCESS_TOKEN;
@@ -48,9 +50,9 @@ public class QuipBasicTest {
   @Test
   void example() throws Exception {
     String accessToken = QUIP_ACCESS_TOKEN;
-    if (!QUIP_CLIENT_ID.isEmpty()) {
+    if (QUIP_CLIENT_ID != null && !QUIP_CLIENT_ID.isEmpty()) {
       QuipToken token = null;
-      if (!QUIP_REFRESH_TOKEN.isEmpty()) {
+      if (QUIP_REFRESH_TOKEN != null && !QUIP_REFRESH_TOKEN.isEmpty()) {
         // Try to renew a new token by refresh token
         token = QuipClient.refreshToken(QUIP_CLIENT_ID, QUIP_CLIENT_SECRET, QUIP_REFRESH_TOKEN);
       }
