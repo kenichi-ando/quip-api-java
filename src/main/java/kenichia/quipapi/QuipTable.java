@@ -144,20 +144,30 @@ public class QuipTable {
   }
 
   private void _construct(QuipTable table, Element element) {
-    Elements cols = element.getElementsByTag("thead").first().getElementsByTag("th");
-    table._columns =
-        cols.stream()
-            .skip(1)
-            .map(col -> new QuipColumn(col.attr("id"), col.text()))
-            .toArray(QuipColumn[]::new);
-
     Elements rows = element.getElementsByTag("tbody").first().getElementsByTag("tr");
     table._rows = new QuipRow[rows.size()];
+
+    Element header = element.getElementsByTag("thead").first();
+    if (header != null) {
+        Elements cols = header.getElementsByTag("th");
+        table._columns =
+            cols.stream()
+                .filter(e -> e.hasAttr("id"))
+                .map(col -> new QuipColumn(col.attr("id"), col.text()))
+                .toArray(QuipColumn[]::new);
+    } else {
+        table._columns =
+                rows.get(0).getElementsByTag("td").stream()
+                    .filter(e -> e.hasAttr("id"))
+                    .map(col -> new QuipColumn(null, null))
+                    .toArray(QuipColumn[]::new);
+    }
+
     for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
       Element row = rows.get(rowIndex);
       QuipCell[] cells =
           row.getElementsByTag("td").stream()
-              .skip(1)
+              .filter(e -> e.hasAttr("id"))
               .map(e -> new QuipCell(e.attr("id"), e.text()))
               .toArray(QuipCell[]::new);
       table._rows[rowIndex] = new QuipRow(row.attr("id"), cells);
