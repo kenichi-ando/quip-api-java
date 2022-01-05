@@ -54,19 +54,19 @@ public class QuipBasicTest {
       QuipToken token = null;
       if (QUIP_REFRESH_TOKEN != null && !QUIP_REFRESH_TOKEN.isEmpty()) {
         // Try to renew a new token by refresh token
-        token = QuipClient.refreshToken(QUIP_CLIENT_ID, QUIP_CLIENT_SECRET, QUIP_REFRESH_TOKEN);
+        token = QuipClient.refreshToken(QUIP_CLIENT_ID, QUIP_CLIENT_SECRET,
+            QUIP_REFRESH_TOKEN);
       }
       if (token == null) {
         // Generate a new access token by authorization code
-        String authUrl =
-            QuipClient.getAuthorizationUrl(
-                QUIP_CLIENT_ID, QUIP_CLIENT_SECRET, QUIP_REDIRECT_URI, null);
+        String authUrl = QuipClient.getAuthorizationUrl(QUIP_CLIENT_ID,
+            QUIP_CLIENT_SECRET, QUIP_REDIRECT_URI, null);
         System.out.print("Open this URL:\n" + authUrl + "\n");
         Scanner scanner = new Scanner(System.in);
         String code = scanner.nextLine();
         scanner.close();
-        token =
-            QuipClient.generateToken(QUIP_CLIENT_ID, QUIP_CLIENT_SECRET, QUIP_REDIRECT_URI, code);
+        token = QuipClient.generateToken(QUIP_CLIENT_ID, QUIP_CLIENT_SECRET,
+            QUIP_REDIRECT_URI, code);
       }
       if (token != null) {
         System.out.println(token.getAccessToken());
@@ -83,15 +83,17 @@ public class QuipBasicTest {
     // Get a list of documents recently updated
     QuipThread[] threads = QuipThread.getRecentThreads();
     for (QuipThread thread : threads) {
-      System.out.println(thread.getId() + ": " + thread.getTitle() + ", " + thread.getLink());
+      System.out.println(
+          thread.getId() + ": " + thread.getTitle() + ", " + thread.getLink());
     }
 
     // Create a new document and insert an image into it
-    QuipThread thread =
-        QuipThread.createDocument("Document1", "Let's start!", null, Format.HTML, Type.DOCUMENT);
+    QuipThread thread = QuipThread.createDocument("Document1", "Let's start!",
+        null, Format.HTML, Type.DOCUMENT);
     QuipBlob blob = thread.addBlob(new File(IMAGE_FILE_PATH));
     thread.editDocument("Here is the image.", Format.HTML, null, null);
-    thread.editDocument("<img src='" + blob.getUrl() + "'>", Format.HTML, null, null);
+    thread.editDocument("<img src='" + blob.getUrl() + "'>", Format.HTML, null,
+        null);
 
     // Delete the document
     thread.delete();

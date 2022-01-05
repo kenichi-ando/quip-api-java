@@ -15,12 +15,14 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
 
@@ -115,19 +117,21 @@ public class QuipUser extends QuipJsonObject {
   // ============================================
 
   public static QuipUser getCurrentUser() throws Exception {
-    return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/current"));
+    return new QuipUser(
+        _getToJsonObject(QuipAccess.ENDPOINT + "/users/current"));
   }
 
   public static QuipUser getUser(String userIdOrEmail) throws Exception {
-    return new QuipUser(_getToJsonObject(QuipAccess.ENDPOINT + "/users/" + userIdOrEmail));
+    return new QuipUser(
+        _getToJsonObject(QuipAccess.ENDPOINT + "/users/" + userIdOrEmail));
   }
 
   public static QuipUser[] getUsers(String[] userIdOrEmails) throws Exception {
-    JsonObject json =
-        _getToJsonObject(
-            new URIBuilder(QuipAccess.ENDPOINT + "/users/")
-                .addParameter("ids", Stream.of(userIdOrEmails).collect(Collectors.joining(",")))
-                .build());
+    JsonObject json = _getToJsonObject(
+        new URIBuilder(QuipAccess.ENDPOINT + "/users/")
+            .addParameter("ids",
+                Stream.of(userIdOrEmails).collect(Collectors.joining(",")))
+            .build());
     return json.keySet().stream()
         .map(id -> new QuipUser(json.get(id).getAsJsonObject()))
         .toArray(QuipUser[]::new);
@@ -141,8 +145,10 @@ public class QuipUser extends QuipJsonObject {
   }
 
   public boolean reload() throws Exception {
-    JsonObject object = _getToJsonObject(QuipAccess.ENDPOINT + "/users/" + getId());
-    if (object == null) return false;
+    JsonObject object = _getToJsonObject(
+        QuipAccess.ENDPOINT + "/users/" + getId());
+    if (object == null)
+      return false;
     _replace(object);
     return true;
   }
@@ -152,9 +158,12 @@ public class QuipUser extends QuipJsonObject {
   // ============================================
 
   public boolean update(String profilePictureUrl) throws Exception {
-    Form form = Form.form().add("user_id", getId()).add("profile_picture_url", profilePictureUrl);
-    JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/users/update", form);
-    if (object == null) return false;
+    Form form = Form.form().add("user_id", getId()).add("profile_picture_url",
+        profilePictureUrl);
+    JsonObject object = _postToJsonObject(QuipAccess.ENDPOINT + "/users/update",
+        form);
+    if (object == null)
+      return false;
     _replace(object);
     return true;
   }

@@ -15,10 +15,11 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.stream.StreamSupport;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class QuipMessage extends QuipJsonObject {
 
@@ -76,7 +77,8 @@ public class QuipMessage extends QuipJsonObject {
 
   public String[] getFiles() {
     JsonArray arr = _getJsonArray("files");
-    if (arr == null) return null;
+    if (arr == null)
+      return null;
     return StreamSupport.stream(arr.spliterator(), false)
         .map(e -> e.getAsJsonObject().get("name").getAsString())
         .toArray(String[]::new);
@@ -84,11 +86,11 @@ public class QuipMessage extends QuipJsonObject {
 
   public QuipDiffGroup[] getDiffGroups() {
     JsonArray arr = _getJsonArray("diff_groups");
-    if (arr == null) return null;
-    QuipDiffGroup[] diffGroups =
-        StreamSupport.stream(arr.spliterator(), false)
-            .map(obj -> new QuipDiffGroup(obj.getAsJsonObject()))
-            .toArray(QuipDiffGroup[]::new);
+    if (arr == null)
+      return null;
+    QuipDiffGroup[] diffGroups = StreamSupport.stream(arr.spliterator(), false)
+        .map(obj -> new QuipDiffGroup(obj.getAsJsonObject()))
+        .toArray(QuipDiffGroup[]::new);
     return diffGroups;
   }
 }

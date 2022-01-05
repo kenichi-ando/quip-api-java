@@ -19,14 +19,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipMessage;
 import kenichia.quipapi.QuipThread;
 import kenichia.quipapi.QuipUser;
 import kenichia.quipapi.QuipWebSocket;
 import kenichia.quipapi.QuipWebSocketEvent;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 public class QuipWebSocketTest implements QuipWebSocketEvent {
 
@@ -56,7 +57,8 @@ public class QuipWebSocketTest implements QuipWebSocketEvent {
 
   @Override
   public void onMessage(QuipMessage message, QuipUser user, QuipThread thread) {
-    System.out.println("onMessage: " + message.getText() + " by " + message.getAuthorName());
+    System.out.println(
+        "onMessage: " + message.getText() + " by " + message.getAuthorName());
   }
 
   @Override

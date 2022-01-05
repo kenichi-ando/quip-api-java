@@ -15,14 +15,15 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.net.http.WebSocket.Listener;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class QuipWebSocket extends QuipJsonObject implements Listener {
 
@@ -57,13 +58,9 @@ public class QuipWebSocket extends QuipJsonObject implements Listener {
     Objects.requireNonNull(event);
     URI uri = URI.create(getUrl());
     _event = event;
-    _webSocket =
-        HttpClient.newBuilder()
-            .build()
-            .newWebSocketBuilder()
-            .header("Origin", "http://" + uri.getHost())
-            .buildAsync(uri, this)
-            .join();
+    _webSocket = HttpClient.newBuilder().build().newWebSocketBuilder()
+        .header("Origin", "http://" + uri.getHost()).buildAsync(uri, this)
+        .join();
   }
 
   public void close() throws Exception {
@@ -87,7 +84,8 @@ public class QuipWebSocket extends QuipJsonObject implements Listener {
   // ============================================
 
   public static QuipWebSocket create() throws Exception {
-    return new QuipWebSocket(_getToJsonObject(QuipAccess.ENDPOINT + "/websockets/new"));
+    return new QuipWebSocket(
+        _getToJsonObject(QuipAccess.ENDPOINT + "/websockets/new"));
   }
 
   // ============================================
@@ -95,24 +93,25 @@ public class QuipWebSocket extends QuipJsonObject implements Listener {
   // ============================================
 
   @Override
-  public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-    if (QuipClient._isDebugEnabled()) System.out.println("WebSocket> " + data + ", last=" + last);
+  public CompletionStage<?> onText(WebSocket webSocket, CharSequence data,
+      boolean last) {
+    if (QuipClient._isDebugEnabled())
+      System.out.println("WebSocket> " + data + ", last=" + last);
 
     JsonObject json = new Gson().fromJson(data.toString(), JsonObject.class);
     switch (json.get("type").getAsString()) {
-      case "message":
-        _event.onMessage(
-            new QuipMessage(json.get("message").getAsJsonObject()),
+      case "message" :
+        _event.onMessage(new QuipMessage(json.get("message").getAsJsonObject()),
             new QuipUser(json.get("user").getAsJsonObject()),
             new QuipThread(json.get("thread").getAsJsonObject()));
         break;
-      case "heartbeat":
+      case "heartbeat" :
         _event.onHeartbeat();
         break;
-      case "alive":
+      case "alive" :
         _event.onAlive(json.get("message").getAsString());
         break;
-      case "error":
+      case "error" :
         _event.onError(json.get("debug").getAsString());
         break;
     }

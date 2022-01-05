@@ -15,8 +15,9 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.JsonObject;
 import java.util.stream.Stream;
+
+import com.google.gson.JsonObject;
 
 public class QuipDiff extends QuipJsonObject {
 
@@ -25,10 +26,8 @@ public class QuipDiff extends QuipJsonObject {
   // ============================================
 
   public enum DiffClass {
-    TRACK_CHANGES("track_changes"),
-    DELETE_ONLY("delete_only"),
-    INSERT_ONLY("insert_only"),
-    INSERT_COMPLETELY("insert_completely");
+    TRACK_CHANGES("track_changes"), DELETE_ONLY("delete_only"), INSERT_ONLY(
+        "insert_only"), INSERT_COMPLETELY("insert_completely");
 
     private final String _value;
 
@@ -37,7 +36,8 @@ public class QuipDiff extends QuipJsonObject {
     }
 
     private static DiffClass find(String value) {
-      return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst().orElse(null);
+      return Stream.of(values()).filter(e -> e._value.equals(value)).findFirst()
+          .orElse(null);
     }
   }
 

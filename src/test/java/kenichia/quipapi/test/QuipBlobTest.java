@@ -20,13 +20,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import kenichia.quipapi.QuipBlob;
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipThread;
 import kenichia.quipapi.QuipThread.Format;
 import kenichia.quipapi.QuipThread.Type;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 public class QuipBlobTest {
   @BeforeAll
@@ -37,23 +39,22 @@ public class QuipBlobTest {
 
   @Test
   void addBlob() throws Exception {
-    QuipThread thread =
-        QuipThread.createDocument(
-            "Sample document", "Let's start!", null, Format.HTML, Type.DOCUMENT);
+    QuipThread thread = QuipThread.createDocument("Sample document",
+        "Let's start!", null, Format.HTML, Type.DOCUMENT);
     File file = new File("/tmp/image.png");
     QuipBlob blob = thread.addBlob(file);
     assertFalse(blob.getId().isEmpty());
     assertFalse(blob.getUrl().isEmpty());
-    thread.editDocument("<img src='" + blob.getUrl() + "'>", Format.HTML, null, null);
+    thread.editDocument("<img src='" + blob.getUrl() + "'>", Format.HTML, null,
+        null);
     assertTrue(thread.getHtml().contains("/blob/"));
     thread.delete();
   }
 
   @Test
   void getBlob() throws Exception {
-    QuipThread thread =
-        QuipThread.createDocument(
-            "Sample document", "Let's start!", null, Format.HTML, Type.DOCUMENT);
+    QuipThread thread = QuipThread.createDocument("Sample document",
+        "Let's start!", null, Format.HTML, Type.DOCUMENT);
     File file = new File("/tmp/image.png");
     QuipBlob blob = thread.addBlob(file);
     byte[] data = thread.getBlob(blob.getId());
@@ -63,8 +64,8 @@ public class QuipBlobTest {
 
   @Test
   void addBlob2() throws Exception {
-    QuipThread thread =
-        QuipThread.createDocument("タイトル🌈", "新規作成🔥", null, Format.HTML, Type.DOCUMENT);
+    QuipThread thread = QuipThread.createDocument("タイトル🌈", "新規作成🔥", null,
+        Format.HTML, Type.DOCUMENT);
     File file = new File("/tmp/image.png");
     QuipBlob blob = thread.addBlob(file);
     String img = "<img src='" + blob.getUrl() + "'>";

@@ -15,11 +15,13 @@
  */
 package kenichia.quipapi;
 
+import java.io.IOException;
+import java.net.URI;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import java.io.IOException;
-import java.net.URI;
+
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -73,12 +75,13 @@ class QuipAccess {
     return _toString(_requestGet(uri));
   }
 
-  protected static JsonObject _postToJsonObject(String uri, Form form) throws IOException {
+  protected static JsonObject _postToJsonObject(String uri, Form form)
+      throws IOException {
     return _toJsonObject(_requestPost(uri, form));
   }
 
-  protected static JsonObject _postToJsonObject(String uri, MultipartEntityBuilder multi)
-      throws IOException {
+  protected static JsonObject _postToJsonObject(String uri,
+      MultipartEntityBuilder multi) throws IOException {
     return _toJsonObject(_requestPost(uri, multi));
   }
 
@@ -86,7 +89,8 @@ class QuipAccess {
     return _toJsonObject(_requestPost(uri));
   }
 
-  protected static JsonArray _postToJsonArray(String uri, Form form) throws IOException {
+  protected static JsonArray _postToJsonArray(String uri, Form form)
+      throws IOException {
     return _toJsonArray(_requestPost(uri, form));
   }
 
@@ -102,13 +106,14 @@ class QuipAccess {
     return _sendRequest(Request.Get(uri));
   }
 
-  private static HttpResponse _requestPost(String uri, Form form) throws IOException {
-    return _sendRequest(
-        Request.Post(uri).body(new UrlEncodedFormEntity(form.build(), Consts.UTF_8)));
+  private static HttpResponse _requestPost(String uri, Form form)
+      throws IOException {
+    return _sendRequest(Request.Post(uri)
+        .body(new UrlEncodedFormEntity(form.build(), Consts.UTF_8)));
   }
 
-  private static HttpResponse _requestPost(String uri, MultipartEntityBuilder multi)
-      throws IOException {
+  private static HttpResponse _requestPost(String uri,
+      MultipartEntityBuilder multi) throws IOException {
     return _sendRequest(Request.Post(uri).body(multi.build()));
   }
 
@@ -120,14 +125,12 @@ class QuipAccess {
     if (QuipClient._isDebugEnabled())
       System.out.println(System.lineSeparator() + "Request> " + req.toString());
     String token = QuipClient._getBearerToken();
-    if (token != null) req.addHeader(HttpHeaders.AUTHORIZATION, token);
+    if (token != null)
+      req.addHeader(HttpHeaders.AUTHORIZATION, token);
     HttpResponse response = req.execute().returnResponse();
     if (QuipClient._isDebugEnabled())
-      System.out.println(
-          "Response> "
-              + response.getStatusLine().toString()
-              + " "
-              + response.getEntity().toString());
+      System.out.println("Response> " + response.getStatusLine().toString()
+          + " " + response.getEntity().toString());
     return response;
   }
 
@@ -135,26 +138,39 @@ class QuipAccess {
     return EntityUtils.toString(response.getEntity());
   }
 
-  private static JsonObject _toJsonObject(HttpResponse response) throws IOException {
-    JsonObject json = new Gson().fromJson(_toString(response), JsonObject.class);
-    if (QuipClient._isDebugEnabled()) System.out.println("Json> " + json.toString());
-    if (_checkError(json)) return null;
+  private static JsonObject _toJsonObject(HttpResponse response)
+      throws IOException {
+    JsonObject json = new Gson().fromJson(_toString(response),
+        JsonObject.class);
+    if (QuipClient._isDebugEnabled())
+      System.out.println("Json> " + json.toString());
+    if (_checkError(json))
+      return null;
     return json;
   }
 
-  private static JsonArray _toJsonArray(HttpResponse response) throws IOException {
+  private static JsonArray _toJsonArray(HttpResponse response)
+      throws IOException {
     JsonArray json = new Gson().fromJson(_toString(response), JsonArray.class);
-    if (QuipClient._isDebugEnabled()) System.out.println("Json> " + json.toString());
+    if (QuipClient._isDebugEnabled())
+      System.out.println("Json> " + json.toString());
     return json;
   }
 
   private static boolean _checkError(JsonObject json) {
-    if (json.get("error") == null) return false;
-    String errorCode = (json.get("error_code") != null) ? json.get("error_code").getAsString() : "";
-    String error = (json.get("error") != null) ? json.get("error").getAsString() : "";
-    String errorDescription =
-        (json.get("error_description") != null) ? json.get("error_description").getAsString() : "";
-    System.out.println("Error> " + errorCode + " " + error + " (" + errorDescription + ")");
+    if (json.get("error") == null)
+      return false;
+    String errorCode = (json.get("error_code") != null)
+        ? json.get("error_code").getAsString()
+        : "";
+    String error = (json.get("error") != null)
+        ? json.get("error").getAsString()
+        : "";
+    String errorDescription = (json.get("error_description") != null)
+        ? json.get("error_description").getAsString()
+        : "";
+    System.out.println(
+        "Error> " + errorCode + " " + error + " (" + errorDescription + ")");
     return true;
   }
 }

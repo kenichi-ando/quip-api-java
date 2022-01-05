@@ -15,12 +15,13 @@
  */
 package kenichia.quipapi;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 class QuipJsonObject extends QuipAccess {
 
@@ -65,7 +66,8 @@ class QuipJsonObject extends QuipAccess {
 
   protected boolean _getBoolean(String keyToJsonObject, String keyToBoolean) {
     JsonObject object = _getJsonObject(keyToJsonObject);
-    if (object == null) return false;
+    if (object == null)
+      return false;
     JsonElement element = object.get(keyToBoolean);
     return (element == null) ? false : element.getAsBoolean();
   }
@@ -87,7 +89,8 @@ class QuipJsonObject extends QuipAccess {
 
   protected String _getString(String keyToJsonObject, String keyToString) {
     JsonObject object = _getJsonObject(keyToJsonObject);
-    if (object == null) return null;
+    if (object == null)
+      return null;
     JsonElement element = object.get(keyToString);
     return (element == null) ? null : element.getAsString();
   }
@@ -99,15 +102,19 @@ class QuipJsonObject extends QuipAccess {
 
   protected String[] _getStringArray(String key) {
     JsonArray array = _getJsonArray(key);
-    if (array == null) return null;
+    if (array == null)
+      return null;
     return _toStringArray(array);
   }
 
-  protected String[] _getStringArray(String keyToJsonObject, String keyToArray) {
+  protected String[] _getStringArray(String keyToJsonObject,
+      String keyToArray) {
     JsonObject object = _getJsonObject(keyToJsonObject);
-    if (object == null) return null;
+    if (object == null)
+      return null;
     JsonArray array = object.get(keyToArray).getAsJsonArray();
-    if (array == null) return null;
+    if (array == null)
+      return null;
     return _toStringArray(array);
   }
 
@@ -117,7 +124,8 @@ class QuipJsonObject extends QuipAccess {
 
   protected Instant _getInstant(String keyToJsonObject, String keyToInstant) {
     JsonObject object = _getJsonObject(keyToJsonObject);
-    if (object == null) return null;
+    if (object == null)
+      return null;
     return _toInstant(object, keyToInstant);
   }
 
@@ -127,8 +135,7 @@ class QuipJsonObject extends QuipAccess {
 
   private String[] _toStringArray(JsonArray array) {
     return StreamSupport.stream(array.spliterator(), false)
-        .map(e -> e.getAsString())
-        .toArray(String[]::new);
+        .map(e -> e.getAsString()).toArray(String[]::new);
   }
 
   private Instant _toInstant(JsonObject object, String key) {

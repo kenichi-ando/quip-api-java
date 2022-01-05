@@ -21,11 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipFolder;
 import kenichia.quipapi.QuipUser;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 public class QuipUserTest {
   @BeforeAll
@@ -74,7 +76,8 @@ public class QuipUserTest {
   @Test
   void getUsers() throws Exception {
     QuipUser user = QuipUser.getCurrentUser();
-    QuipUser[] users = QuipUser.getUsers(new String[] {user.getId(), user.getId()});
+    QuipUser[] users = QuipUser
+        .getUsers(new String[]{user.getId(), user.getId()});
     assertEquals(user.getId(), users[0].getId());
   }
 }

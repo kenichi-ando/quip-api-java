@@ -51,20 +51,24 @@ public class QuipTable {
 
   public String getCellValue(int column, int row) {
     QuipCell cell = _getCell(column, row);
-    if (cell == null) return null;
+    if (cell == null)
+      return null;
     return _rows[row].getCell(column).getValue();
   }
 
   public String getColumnHeader(int column) {
-    if (column < 0 || column >= _columns.length) return null;
+    if (column < 0 || column >= _columns.length)
+      return null;
     return _columns[column].getHeader();
   }
 
-  public boolean updateCellValue(int column, int row, String value) throws Exception {
+  public boolean updateCellValue(int column, int row, String value)
+      throws Exception {
     QuipCell cell = _getCell(column, row);
-    if (cell == null) return false;
-    if (!_parentThread.editDocument(
-        value, QuipThread.Format.HTML, QuipThread.Location.REPLACE_SECTION, cell.getId()))
+    if (cell == null)
+      return false;
+    if (!_parentThread.editDocument(value, QuipThread.Format.HTML,
+        QuipThread.Location.REPLACE_SECTION, cell.getId()))
       return false;
     refresh();
     return true;
@@ -75,8 +79,10 @@ public class QuipTable {
   }
 
   public boolean addRow(String[] values) throws Exception {
-    if (_rows.length == 0) return false;
-    return _addRow(values, _rows[_rows.length - 1].getId(), QuipThread.Location.AFTER_SECTION);
+    if (_rows.length == 0)
+      return false;
+    return _addRow(values, _rows[_rows.length - 1].getId(),
+        QuipThread.Location.AFTER_SECTION);
   }
 
   public boolean addRow(int row) throws Exception {
@@ -84,31 +90,38 @@ public class QuipTable {
   }
 
   public boolean addRow(int row, String[] values) throws Exception {
-    if (row < 0 || row >= _rows.length) return false;
-    return _addRow(values, _rows[row].getId(), QuipThread.Location.BEFORE_SECTION);
+    if (row < 0 || row >= _rows.length)
+      return false;
+    return _addRow(values, _rows[row].getId(),
+        QuipThread.Location.BEFORE_SECTION);
   }
 
-  private boolean _addRow(String[] values, String id, QuipThread.Location loc) throws Exception {
-    if (!_parentThread.editDocument(_makeRowHtml(values), QuipThread.Format.HTML, loc, id))
+  private boolean _addRow(String[] values, String id, QuipThread.Location loc)
+      throws Exception {
+    if (!_parentThread.editDocument(_makeRowHtml(values),
+        QuipThread.Format.HTML, loc, id))
       return false;
     refresh();
     return true;
   }
 
   public boolean removeRow(int row) throws Exception {
-    if (row < 0 || row >= _rows.length || _rows.length <= 1) return false;
-    if (!_parentThread.editDocument(
-        null, QuipThread.Format.HTML, QuipThread.Location.DELETE_SECTION, _rows[row].getId()))
+    if (row < 0 || row >= _rows.length || _rows.length <= 1)
+      return false;
+    if (!_parentThread.editDocument(null, QuipThread.Format.HTML,
+        QuipThread.Location.DELETE_SECTION, _rows[row].getId()))
       return false;
     refresh();
     return true;
   }
 
   public static String createTableHtml(int columnSize, int rowSize) {
-    return createTableHtml(new String[columnSize], new String[rowSize][columnSize]);
+    return createTableHtml(new String[columnSize],
+        new String[rowSize][columnSize]);
   }
 
-  public static String createTableHtml(String[] columnHeaders, String[][] cellValues) {
+  public static String createTableHtml(String[] columnHeaders,
+      String[][] cellValues) {
     StringBuffer sb = new StringBuffer("<table>");
     sb.append("<thead>");
     sb.append("<tr>");
@@ -139,37 +152,35 @@ public class QuipTable {
   }
 
   private QuipCell _getCell(int column, int row) {
-    if (column < 0 || column >= _columns.length || row < 0 || row >= _rows.length) return null;
+    if (column < 0 || column >= _columns.length || row < 0
+        || row >= _rows.length)
+      return null;
     return _rows[row].getCell(column);
   }
 
   private void _construct(QuipTable table, Element element) {
-    Elements rows = element.getElementsByTag("tbody").first().getElementsByTag("tr");
+    Elements rows = element.getElementsByTag("tbody").first()
+        .getElementsByTag("tr");
     table._rows = new QuipRow[rows.size()];
 
     Element header = element.getElementsByTag("thead").first();
     if (header != null) {
-        Elements cols = header.getElementsByTag("th");
-        table._columns =
-            cols.stream()
-                .filter(e -> e.hasAttr("id"))
-                .map(col -> new QuipColumn(col.attr("id"), col.text()))
-                .toArray(QuipColumn[]::new);
+      Elements cols = header.getElementsByTag("th");
+      table._columns = cols.stream().filter(e -> e.hasAttr("id"))
+          .map(col -> new QuipColumn(col.attr("id"), col.text()))
+          .toArray(QuipColumn[]::new);
     } else {
-        table._columns =
-                rows.get(0).getElementsByTag("td").stream()
-                    .filter(e -> e.hasAttr("id"))
-                    .map(col -> new QuipColumn(null, null))
-                    .toArray(QuipColumn[]::new);
+      table._columns = rows.get(0).getElementsByTag("td").stream()
+          .filter(e -> e.hasAttr("id")).map(col -> new QuipColumn(null, null))
+          .toArray(QuipColumn[]::new);
     }
 
     for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
       Element row = rows.get(rowIndex);
-      QuipCell[] cells =
-          row.getElementsByTag("td").stream()
-              .filter(e -> e.hasAttr("id"))
-              .map(e -> new QuipCell(e.attr("id"), e.text()))
-              .toArray(QuipCell[]::new);
+      QuipCell[] cells = row.getElementsByTag("td").stream()
+          .filter(e -> e.hasAttr("id"))
+          .map(e -> new QuipCell(e.attr("id"), e.text()))
+          .toArray(QuipCell[]::new);
       table._rows[rowIndex] = new QuipRow(row.attr("id"), cells);
     }
   }
@@ -207,7 +218,8 @@ class QuipRow {
   }
 
   QuipCell getCell(int column) {
-    if (column < 0 || column >= _cells.length) return null;
+    if (column < 0 || column >= _cells.length)
+      return null;
     return _cells[column];
   }
 }
