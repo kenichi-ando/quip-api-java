@@ -177,6 +177,10 @@ public class QuipThread extends QuipJsonObject {
         return _getString("html");
     }
 
+    public String getOwningCompanyId(){
+        return _getString("thread","owning_company_id");
+    }
+
     // ============================================
     // Read / Search
     // ============================================
