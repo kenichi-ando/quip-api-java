@@ -61,7 +61,7 @@ public class QuipUserTest {
     System.out.println(user.getChatThreadId());
     System.out.println(Arrays.toString(user.getSharedFolderIds()));
     for (String fid : user.getSharedFolderIds()) {
-      QuipFolder f = QuipFolder.getFolder(fid);
+      QuipFolder f = QuipFolder.getFolder(fid, false);
       System.out.println(f.getTitle());
     }
   }

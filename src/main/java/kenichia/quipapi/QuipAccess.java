@@ -80,6 +80,11 @@ class QuipAccess {
     return _toJsonObject(_requestPost(uri, form));
   }
 
+  protected static JsonObject _postToJsonObject(URI uri, Form form)
+      throws IOException {
+    return _toJsonObject(_requestPost(uri, form));
+  }
+
   protected static JsonObject _postToJsonObject(String uri,
       MultipartEntityBuilder multi) throws IOException {
     return _toJsonObject(_requestPost(uri, multi));
@@ -107,6 +112,12 @@ class QuipAccess {
   }
 
   private static HttpResponse _requestPost(String uri, Form form)
+      throws IOException {
+    return _sendRequest(Request.Post(uri)
+        .body(new UrlEncodedFormEntity(form.build(), Consts.UTF_8)));
+  }
+
+  private static HttpResponse _requestPost(URI uri, Form form)
       throws IOException {
     return _sendRequest(Request.Post(uri)
         .body(new UrlEncodedFormEntity(form.build(), Consts.UTF_8)));

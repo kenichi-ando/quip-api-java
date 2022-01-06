@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class QuipFolder extends QuipJsonObject {
 
@@ -137,9 +137,13 @@ public class QuipFolder extends QuipJsonObject {
     // Read
     // ============================================
 
-    public static QuipFolder getFolder(String folderId) throws Exception {
-        return new QuipFolder(
-                _getToJsonObject(QuipAccess.ENDPOINT + "/folders/" + folderId));
+    public static QuipFolder getFolder(String folderId, boolean includeChats)
+            throws Exception {
+        return new QuipFolder(_getToJsonObject(
+                new URIBuilder(QuipAccess.ENDPOINT + "/folders/" + folderId)
+                        .addParameter("include_chats",
+                                String.valueOf(includeChats))
+                        .build()));
     }
 
     public static QuipFolder[] getFolders(String[] folderIds,
@@ -169,7 +173,7 @@ public class QuipFolder extends QuipJsonObject {
     // ============================================
 
     public static QuipFolder create(String title, Color color, String parentId,
-            String[] memberIds) throws Exception {
+            String[] memberIds, boolean includeChats) throws Exception {
         Form form = Form.form();
         if (title != null)
             form.add("title", title);
@@ -181,17 +185,27 @@ public class QuipFolder extends QuipJsonObject {
             form.add("member_ids",
                     Stream.of(memberIds).collect(Collectors.joining(",")));
         return new QuipFolder(
-                _postToJsonObject(QuipAccess.ENDPOINT + "/folders/new", form));
+                _postToJsonObject(
+                        new URIBuilder(QuipAccess.ENDPOINT + "/folders/new")
+                                .addParameter("include_chats",
+                                        String.valueOf(includeChats))
+                                .build(),
+                        form));
     }
 
-    public boolean update(String title, Color color) throws Exception {
+    public boolean update(String title, Color color, boolean includeChats)
+            throws Exception {
         Form form = Form.form().add("folder_id", getId());
         if (title != null)
             form.add("title", title);
         if (color != null)
             form.add("color", color._value);
         JsonObject object = _postToJsonObject(
-                QuipAccess.ENDPOINT + "/folders/update", form);
+                new URIBuilder(QuipAccess.ENDPOINT + "/folders/update")
+                        .addParameter("include_chats",
+                                String.valueOf(includeChats))
+                        .build(),
+                form);
         if (object == null)
             return false;
         _replace(object);
@@ -229,6 +243,6 @@ public class QuipFolder extends QuipJsonObject {
         if (object == null)
             return false;
         _replace(object);
-        return true;
-    }
+		return true;
+	}
 }

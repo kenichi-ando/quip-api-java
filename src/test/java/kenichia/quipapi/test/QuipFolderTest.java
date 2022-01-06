@@ -37,15 +37,15 @@ public class QuipFolderTest {
     @Test
     void getFolder() throws Exception {
         QuipFolder folder = QuipFolder.create("フォルダー１🌈", Color.LIGHT_PURPLE,
-                null, null);
-        QuipFolder folder1 = QuipFolder.getFolder(folder.getId());
+                null, null, true);
+        QuipFolder folder1 = QuipFolder.getFolder(folder.getId(), true);
         assertEquals(folder.getId(), folder1.getId());
     }
 
     @Test
     void getFolders() throws Exception {
         QuipFolder folder1 = QuipFolder.create("フォルダー１🌈", Color.LIGHT_PURPLE,
-                null, null);
+                null, null, true);
         QuipFolder[] folders = QuipFolder.getFolders(
                 new String[]{folder1.getId(), folder1.getId()}, false);
         assertEquals(folder1.getId(), folders[0].getId());
@@ -54,7 +54,7 @@ public class QuipFolderTest {
     @Test
     void createFolder() throws Exception {
         QuipFolder folder = QuipFolder.create("フォルダー１🌈", Color.LIGHT_PURPLE,
-                null, null);
+                null, null, false);
         assertNotNull(folder);
         assertFalse(folder.getId().isEmpty());
         assertEquals("フォルダー１🌈", folder.getTitle());
@@ -70,9 +70,9 @@ public class QuipFolderTest {
     @Test
     void createSubFolder() throws Exception {
         QuipFolder parent = QuipFolder.create("親フォルダー🌈", Color.LIGHT_PURPLE,
-                null, null);
+                null, null, true);
         QuipFolder child = QuipFolder.create("子フォルダー🌈", Color.LIGHT_GREEN,
-                parent.getId(), null);
+                parent.getId(), null, true);
         assertEquals("子フォルダー🌈", child.getTitle());
         assertEquals(parent.getId(), child.getParentId());
 
