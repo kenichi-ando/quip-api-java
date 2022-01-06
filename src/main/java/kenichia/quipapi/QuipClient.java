@@ -15,14 +15,14 @@
  */
 package kenichia.quipapi;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
 
 public class QuipClient extends QuipAccess {
 
@@ -98,6 +98,38 @@ public class QuipClient extends QuipAccess {
     params.add(new BasicNameValuePair("token", _instance._accessToken));
     _postToJsonObject(new URIBuilder(QuipAccess.ENDPOINT + "/oauth/revoke")
         .addParameters(params).build());
+  }
+
+  public static Integer getUserRateLimit(){
+     return QuipAccess.xRateLimitLimit;
+  }
+
+  public static Long getUserRateReset(){
+      return QuipAccess.xRateLimitReset;
+  }
+
+  public static Integer getUserRateLimitRemaining(){
+      return QuipAccess.xRateLimitRemaining;
+  }
+
+  public static Integer getUserRetryAfter(){
+      return QuipAccess.xRateLimitRetryAfter;
+  }
+
+  public static Integer getCompanyRateLimit(){
+      return QuipAccess.xCompanyRateLimitLimit;
+  }
+
+  public static Long getCompanyRateReset(){
+      return QuipAccess.xCompanyRateLimitReset;
+  }
+
+  public static Integer getCompanyRateLimitRemaining(){
+      return QuipAccess.xCompanyRateLimitRemaining;
+  }
+
+  public static Integer getCompanyRetryAfter(){
+      return QuipAccess.xCompanyRetryAfter;
   }
 
   public static void enableDebug(boolean isEnabled) {

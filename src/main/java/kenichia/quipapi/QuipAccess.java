@@ -15,13 +15,9 @@
  */
 package kenichia.quipapi;
 
-import java.io.IOException;
-import java.net.URI;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -31,6 +27,9 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.EntityUtils;
 
+import java.io.IOException;
+import java.net.URI;
+
 class QuipAccess {
 
   public static String ENDPOINT = "https://platform.quip.com/1";
@@ -38,6 +37,18 @@ class QuipAccess {
   // ============================================
   // Protected
   // ============================================
+
+  // to handle rate limits when using the library
+  protected static Integer xRateLimitLimit = 0;
+  protected static Integer xRateLimitRemaining = 0;
+  // utc timestamp in seconds
+  protected static Long xRateLimitReset = 0L;
+  protected static Integer xRateLimitRetryAfter = 0;
+  protected static Integer xCompanyRateLimitLimit = 0;
+  protected static Integer xCompanyRateLimitRemaining = 0;
+  // utc timestamp in seconds
+  protected static Long xCompanyRateLimitReset = 0L;
+  protected static Integer xCompanyRetryAfter = 0;
 
   protected static JsonObject _getToJsonObject(String uri) throws IOException {
     return _toJsonObject(_requestGet(uri));
@@ -151,6 +162,7 @@ class QuipAccess {
 
   private static JsonObject _toJsonObject(HttpResponse response)
       throws IOException {
+    updateRateLimits(response);
     JsonObject json = new Gson().fromJson(_toString(response),
         JsonObject.class);
     if (QuipClient._isDebugEnabled())
@@ -162,6 +174,7 @@ class QuipAccess {
 
   private static JsonArray _toJsonArray(HttpResponse response)
       throws IOException {
+    updateRateLimits(response);
     JsonArray json = new Gson().fromJson(_toString(response), JsonArray.class);
     if (QuipClient._isDebugEnabled())
       System.out.println("Json> " + json.toString());
@@ -183,5 +196,17 @@ class QuipAccess {
     System.out.println(
         "Error> " + errorCode + " " + error + " (" + errorDescription + ")");
     return true;
+  }
+
+  private static void updateRateLimits(HttpResponse response){
+    xRateLimitLimit = Integer.valueOf(response.getFirstHeader("X-Ratelimit-Limit").getValue());
+    xRateLimitRemaining = Integer.valueOf(response.getFirstHeader("X-Ratelimit-Remaining").getValue());
+    xRateLimitReset = Long.valueOf(response.getFirstHeader("X-Ratelimit-Reset").getValue());
+    xRateLimitRetryAfter = Integer.valueOf(response.getFirstHeader("Retry-After").getValue());
+
+    xCompanyRateLimitLimit = Integer.valueOf(response.getFirstHeader("X-Company-RateLimit-Limit").getValue());
+    xCompanyRateLimitRemaining = Integer.valueOf(response.getFirstHeader("X-Company-RateLimit-Remaining").getValue());
+    xCompanyRateLimitReset = Long.valueOf(response.getFirstHeader("X-Company-RateLimit-Reset").getValue());
+    xCompanyRetryAfter = Integer.valueOf(response.getFirstHeader("X-Company-Retry-After").getValue());
   }
 }

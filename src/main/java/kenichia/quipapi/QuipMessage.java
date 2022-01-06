@@ -15,11 +15,18 @@
  */
 package kenichia.quipapi;
 
-import java.time.Instant;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 public class QuipMessage extends QuipJsonObject {
 
@@ -92,5 +99,58 @@ public class QuipMessage extends QuipJsonObject {
         .map(obj -> new QuipDiffGroup(obj.getAsJsonObject()))
         .toArray(QuipDiffGroup[]::new);
     return diffGroups;
+  }
+
+    /**
+     * Method fetches messages for the relevant thread based on maxCreated,updatedSince and lastUpdatedSince time filters.
+     * @param threadId - The ID of the thread to return recent messages for.
+     * @param count - Number of messages to return.
+     * @param maxCreatedUsec - A UNIX timestamp in microseconds returns messages created at and before the given timestamp.
+     * @param updatedSinceUsec - A UNIX timestamp in microseconds returns messages last updated at and after the given timestamp.
+     * @param lastUpdatedSinceUsec - A UNIX timestamp in microseconds returns messages last updated before the given timestamp.
+     * @param sortedBy - Determines whether to sort messages in ascending or descending order.
+     * @param messageType - Determines the type of messages to return.
+     * @return - QuipMessage[] for the specified thread.
+     * @throws Exception - 400,401,403,500
+     */
+  public static QuipMessage[] getRecentMessages(String threadId, Integer count, Instant maxCreatedUsec, Instant updatedSinceUsec,
+                                                Instant lastUpdatedSinceUsec, QuipThread.SortedBy sortedBy,
+                                                QuipThread.MessageType messageType) throws Exception {
+    List<NameValuePair> params = new ArrayList<>();
+    if (Objects.nonNull(count)) {
+      params.add(new BasicNameValuePair("count", String.valueOf(count)));
+    }
+
+    if (maxCreatedUsec != null) {
+      params.add(new BasicNameValuePair("max_created_usec",
+              String.valueOf(ChronoUnit.MICROS.between(Instant.EPOCH,
+                      maxCreatedUsec))));
+    }
+
+    if (Objects.nonNull(updatedSinceUsec)){
+      params.add(new BasicNameValuePair("updated_since_usec",
+              String.valueOf(ChronoUnit.MICROS.between(Instant.EPOCH,
+                      updatedSinceUsec))));
+    }
+
+    if (Objects.nonNull(lastUpdatedSinceUsec)){
+      params.add(new BasicNameValuePair("last_updated_since_usec",
+              String.valueOf(ChronoUnit.MICROS.between(Instant.EPOCH,
+                      lastUpdatedSinceUsec))));
+    }
+
+    if (!Objects.equals(sortedBy, QuipThread.SortedBy.NONE)){
+        params.add(new BasicNameValuePair("sorted_by", sortedBy.name()));
+    }
+
+    if (messageType != null)
+      params.add(
+              new BasicNameValuePair("message_type", messageType.name()));
+    JsonArray arr = _getToJsonArray(
+            new URIBuilder(QuipAccess.ENDPOINT + "/messages/" + threadId)
+                    .addParameters(params).build());
+    return StreamSupport.stream(arr.spliterator(), false)
+            .map(obj -> new QuipMessage(obj.getAsJsonObject()))
+            .toArray(QuipMessage[]::new);
   }
 }

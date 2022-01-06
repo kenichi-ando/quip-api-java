@@ -15,27 +15,19 @@
  */
 package kenichia.quipapi.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import kenichia.quipapi.QuipClient;
 import kenichia.quipapi.QuipMessage;
 import kenichia.quipapi.QuipThread;
-import kenichia.quipapi.QuipThread.Format;
-import kenichia.quipapi.QuipThread.Frame;
-import kenichia.quipapi.QuipThread.Location;
-import kenichia.quipapi.QuipThread.Mode;
-import kenichia.quipapi.QuipThread.Type;
+import kenichia.quipapi.QuipThread.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileOutputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class QuipThreadTest {
   @BeforeAll
@@ -66,6 +58,18 @@ public class QuipThreadTest {
   @Test
   void getRecentThreads() throws Exception {
     QuipThread[] threads = QuipThread.getRecentThreads();
+    for (QuipThread t : threads) {
+      System.out.println(t.getId() + ", " + t.getTitle() + ", " + t.getLink());
+    }
+  }
+
+  @Test
+  void getRecentThreads(Integer count, Instant maxUpdatedUsec, boolean includeHidden) throws Exception {
+    QuipThread[] threads = QuipThread.getRecentThreads(count,maxUpdatedUsec,includeHidden);
+    assertTrue(threads.length <= count);
+    if(threads.length > 0){
+        assertTrue(threads[1].getUpdatedUsec().toEpochMilli() <= maxUpdatedUsec.toEpochMilli());
+    }
     for (QuipThread t : threads) {
       System.out.println(t.getId() + ", " + t.getTitle() + ", " + t.getLink());
     }

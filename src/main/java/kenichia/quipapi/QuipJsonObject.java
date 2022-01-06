@@ -15,13 +15,13 @@
  */
 package kenichia.quipapi;
 
-import java.time.Instant;
-import java.util.Objects;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import java.time.Instant;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 class QuipJsonObject extends QuipAccess {
 
@@ -135,7 +135,7 @@ class QuipJsonObject extends QuipAccess {
 
   private String[] _toStringArray(JsonArray array) {
     return StreamSupport.stream(array.spliterator(), false)
-        .map(e -> e.getAsString()).toArray(String[]::new);
+        .map(JsonElement::getAsString).toArray(String[]::new);
   }
 
   private Instant _toInstant(JsonObject object, String key) {
