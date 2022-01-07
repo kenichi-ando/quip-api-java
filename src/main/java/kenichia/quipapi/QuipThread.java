@@ -15,18 +15,8 @@
  */
 package kenichia.quipapi;
 
-import java.io.File;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,6 +25,16 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.File;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class QuipThread extends QuipJsonObject {
 
@@ -48,7 +48,7 @@ public class QuipThread extends QuipJsonObject {
 
         private final String _value;
 
-        private Type(String value) {
+        Type(String value) {
             _value = value;
         }
 
@@ -63,7 +63,7 @@ public class QuipThread extends QuipJsonObject {
 
         private final String _value;
 
-        private Format(String value) {
+        Format(String value) {
             _value = value;
         }
     }
@@ -71,12 +71,12 @@ public class QuipThread extends QuipJsonObject {
     public enum Location {
         APPEND(0), PREPEND(1), AFTER_SECTION(2), BEFORE_SECTION(
                 3), REPLACE_SECTION(4), DELETE_SECTION(5), AFTER_DOCUMENT_RANGE(
-                        6), BEFORE_DOCUMENT_RANGE(7), REPLACE_DOCUMENT_RANGE(
-                                8), DELETE_DOCUMENT_RANGE(9);
+                6), BEFORE_DOCUMENT_RANGE(7), REPLACE_DOCUMENT_RANGE(
+                8), DELETE_DOCUMENT_RANGE(9);
 
         private final int _value;
 
-        private Location(int value) {
+        Location(int value) {
             _value = value;
         }
     }
@@ -86,7 +86,7 @@ public class QuipThread extends QuipJsonObject {
 
         private final String _value;
 
-        private Frame(String value) {
+        Frame(String value) {
             _value = value;
         }
     }
@@ -98,7 +98,7 @@ public class QuipThread extends QuipJsonObject {
 
         private final String _value;
 
-        private Mode(String value) {
+        Mode(String value) {
             _value = value;
         }
     }
@@ -110,8 +110,20 @@ public class QuipThread extends QuipJsonObject {
 
         private final String _value;
 
-        private MessageType(String value) {
+        MessageType(String value) {
             _value = value;
+        }
+    }
+
+    public enum SortedBy {
+        ASC("asc"),
+        DESC("desc"),
+        NONE("none");
+
+        private final String sortOrder;
+
+        SortedBy(String sortOder) {
+            this.sortOrder = sortOder;
         }
     }
 
@@ -214,8 +226,33 @@ public class QuipThread extends QuipJsonObject {
                 .toArray(QuipThread[]::new);
     }
 
+    /**
+     * @param count          - number of threads to fetch
+     * @param maxUpdatedUsec - max updated time
+     * @param includeHidden  - include hidden chats
+     * @return - QuipThread[] of the most recently updated where
+     * updated_usec is less or equal to the maxUpdatedUsec passed.
+     * @throws Exception - 403,401,404,500
+     */
+    public static QuipThread[] getRecentThreads(Integer count, Instant maxUpdatedUsec, boolean includeHidden) throws Exception {
+        URIBuilder uriBuilder = new URIBuilder(QuipAccess.ENDPOINT + "/threads/recent");
+        if (Objects.nonNull(count) && count > 0) {
+            uriBuilder.addParameter("count", String.valueOf(count));
+        }
+
+        if (Objects.nonNull(maxUpdatedUsec)) {
+            uriBuilder.addParameter("max_updated_usec", String.valueOf(ChronoUnit.MICROS.between(Instant.EPOCH,
+                    maxUpdatedUsec)));
+        }
+
+        JsonObject json = _getToJsonObject(uriBuilder.addParameter("include_hidden", String.valueOf(includeHidden)).build());
+        return json.entrySet().stream()
+                .map(obj -> new QuipThread((JsonObject) obj.getValue()))
+                .toArray(QuipThread[]::new);
+    }
+
     public static QuipThread[] searchThreads(String query, Integer count,
-            Boolean isOnlyMatchTitles) throws Exception {
+                                             Boolean isOnlyMatchTitles) throws Exception {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("query", query));
         if (count != null)
@@ -245,7 +282,7 @@ public class QuipThread extends QuipJsonObject {
     // ============================================
 
     public static QuipThread createDocument(String title, String content,
-            String[] memberIds, Format format, Type type) throws Exception {
+                                            String[] memberIds, Format format, Type type) throws Exception {
         Form form = Form.form();
         if (title != null)
             form.add("title", title);
@@ -263,7 +300,7 @@ public class QuipThread extends QuipJsonObject {
     }
 
     public static QuipThread createChat(String title, String message,
-            String[] memberIds) throws Exception {
+                                        String[] memberIds) throws Exception {
         Form form = Form.form();
         if (title != null)
             form.add("title", title);
@@ -277,7 +314,7 @@ public class QuipThread extends QuipJsonObject {
     }
 
     public QuipThread copyDocument(String title, String values,
-            String[] memberIds, String[] folderIds) throws Exception {
+                                   String[] memberIds, String[] folderIds) throws Exception {
         Form form = Form.form().add("thread_id", getId());
         if (title != null)
             form.add("title", title);
@@ -294,7 +331,7 @@ public class QuipThread extends QuipJsonObject {
     }
 
     public boolean editDocument(String content, Format format,
-            Location location, String sectionIdOrDocumentRange)
+                                Location location, String sectionIdOrDocumentRange)
             throws Exception {
         Form form = Form.form().add("thread_id", getId());
         if (format != null)
@@ -324,10 +361,10 @@ public class QuipThread extends QuipJsonObject {
     }
 
     public boolean createLivePasteSection(String sourceThreadId,
-            Boolean isDocumentRangeSource,
-            String[] sourceSectionIdsOrDocumentRange, Location location,
-            String destinationSectionIdOrDocumentRange,
-            Boolean isUpdateAutomatic) throws Exception {
+                                          Boolean isDocumentRangeSource,
+                                          String[] sourceSectionIdsOrDocumentRange, Location location,
+                                          String destinationSectionIdOrDocumentRange,
+                                          Boolean isUpdateAutomatic) throws Exception {
         Form form = Form.form().add("destination_thread_id", getId());
         if (sourceThreadId != null)
             form.add("source_thread_id", sourceThreadId);
@@ -395,7 +432,7 @@ public class QuipThread extends QuipJsonObject {
     // ============================================
 
     public static QuipThread importFile(File file, Type type, String title,
-            String[] memberIds) throws Exception {
+                                        String[] memberIds) throws Exception {
         MultipartEntityBuilder multipart = MultipartEntityBuilder.create()
                 .addBinaryBody("file", file);
         if (type != null)
@@ -443,8 +480,8 @@ public class QuipThread extends QuipJsonObject {
                         + "/export/pdf/async").addParameters(params).build());
         return (json.get("status").getAsString().equals("SUCCESS")
                 || json.get("status").getAsString().equals("PARTIAL_SUCCESS"))
-                        ? json.get("pdf_url").getAsString()
-                        : null;
+                ? json.get("pdf_url").getAsString()
+                : null;
     }
 
     // ============================================
@@ -452,28 +489,14 @@ public class QuipThread extends QuipJsonObject {
     // ============================================
 
     public QuipMessage[] getRecentMessages(Integer count,
-            Instant maxCreatedUsec, MessageType messageType) throws Exception {
-        List<NameValuePair> params = new ArrayList<>();
-        if (count != null)
-            params.add(new BasicNameValuePair("count", String.valueOf(count)));
-        if (maxCreatedUsec != null)
-            params.add(new BasicNameValuePair("max_created_usec",
-                    String.valueOf(ChronoUnit.MICROS.between(Instant.EPOCH,
-                            maxCreatedUsec))));
-        if (messageType != null)
-            params.add(
-                    new BasicNameValuePair("message_type", messageType._value));
-        JsonArray arr = _getToJsonArray(
-                new URIBuilder(QuipAccess.ENDPOINT + "/messages/" + getId())
-                        .addParameters(params).build());
-        return StreamSupport.stream(arr.spliterator(), false)
-                .map(obj -> new QuipMessage(obj.getAsJsonObject()))
-                .toArray(QuipMessage[]::new);
+                                           Instant maxCreatedUsec, MessageType messageType) throws Exception {
+        return QuipMessage
+                .getRecentMessages(getId(), count, maxCreatedUsec, null, null, SortedBy.NONE, messageType);
     }
 
     public QuipMessage addMessage(Frame frame, String content, String parts,
-            Boolean isSilent, String[] blobIds, String annotationId,
-            String sectionId) throws Exception {
+                                  Boolean isSilent, String[] blobIds, String annotationId,
+                                  String sectionId) throws Exception {
         Form form = Form.form().add("thread_id", getId());
         if (frame != null)
             form.add("frame", frame._value);
@@ -499,8 +522,7 @@ public class QuipThread extends QuipJsonObject {
     // ============================================
 
     public byte[] getBlob(String blobId) throws Exception {
-        return _getToByteArray(
-                QuipAccess.ENDPOINT + "/blob/" + getId() + "/" + blobId);
+        return QuipBlob.getBlob(getId(), blobId);
     }
 
     public QuipBlob addBlob(File file) throws Exception {
@@ -544,9 +566,9 @@ public class QuipThread extends QuipJsonObject {
     }
 
     public boolean editShareLinkSettings(Mode mode, Boolean allowExternalAccess,
-            Boolean showConversation, Boolean showEditHistory,
-            Boolean allowMessages, Boolean allowComments,
-            Boolean enableRequestAccess) throws Exception {
+                                         Boolean showConversation, Boolean showEditHistory,
+                                         Boolean allowMessages, Boolean allowComments,
+                                         Boolean enableRequestAccess) throws Exception {
         Form form = Form.form().add("thread_id", getId());
         if (mode != null)
             form.add("mode", mode._value);

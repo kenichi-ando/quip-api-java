@@ -19,23 +19,36 @@ import com.google.gson.JsonObject;
 
 public class QuipBlob extends QuipJsonObject {
 
-  // ============================================
-  // Constructor
-  // ============================================
+    // ============================================
+    // Constructor
+    // ============================================
 
-  protected QuipBlob(JsonObject json) {
-    super(json);
-  }
+    protected QuipBlob(JsonObject json) {
+        super(json);
+    }
 
-  // ============================================
-  // Properties
-  // ============================================
+    /**
+     * Method to get images and attachments from a thread or thread messages.
+     * @param threadId - thread id.
+     * @param blobId - id of the blob to be fetched.
+     * @return - byte[] of the blob
+     * @throws Exception - if the blob not exit on the thread or if the
+     * thread id is invalid.
+     */
+    public static byte[] getBlob(String threadId, String blobId) throws Exception {
+        return _getToByteArray(
+                QuipAccess.ENDPOINT + "/blob/" + threadId + "/" + blobId);
+    }
 
-  public String getId() {
-    return _getString("id");
-  }
+    // ============================================
+    // Properties
+    // ============================================
 
-  public String getUrl() {
-    return _getString("url");
-  }
+    public String getId() {
+        return _getString("id");
+    }
+
+    public String getUrl() {
+        return _getString("url");
+    }
 }
