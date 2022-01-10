@@ -92,6 +92,18 @@ public class QuipMessage extends QuipJsonObject {
   }
 
   /**
+   * Gets an array of files with name and hash as JsonArray
+   * @return String "[{"name":"xxxxx","hash":"xxxx"}]"
+   */
+  public String getFilesWithHashAsString() {
+    JsonArray arr = _getJsonArray("files");
+    if (arr == null) {
+      return null;
+    }
+    return arr.toString();
+  }
+
+  /**
    * Gets an array of files with name and hash
    * @return String[] [{"name":"xxxxx","hash":"xxxx"}]
    */
