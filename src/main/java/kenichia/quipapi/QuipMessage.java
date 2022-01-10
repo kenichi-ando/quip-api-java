@@ -176,9 +176,9 @@ public class QuipMessage extends QuipJsonObject {
         params.add(new BasicNameValuePair("sorted_by", sortedBy.name()));
     }
 
-    if (messageType != null)
-      params.add(
-              new BasicNameValuePair("message_type", messageType.name()));
+    if (messageType != null) {
+      params.add(new BasicNameValuePair("message_type", messageType.name().toLowerCase()));
+    }
     JsonArray arr = _getToJsonArray(
             new URIBuilder(QuipAccess.ENDPOINT + "/messages/" + threadId)
                     .addParameters(params).build());
