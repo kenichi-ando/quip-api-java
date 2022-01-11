@@ -29,11 +29,12 @@ public class QuipBlob extends QuipJsonObject {
 
     /**
      * Method to get images and attachments from a thread or thread messages.
+     *
      * @param threadId - thread id.
-     * @param blobId - id of the blob to be fetched.
+     * @param blobId   - id of the blob to be fetched.
      * @return - byte[] of the blob
      * @throws Exception - if the blob not exit on the thread or if the
-     * thread id is invalid.
+     *                   thread id is invalid.
      */
     public static byte[] getBlob(String threadId, String blobId) throws Exception {
         return _getToByteArray(

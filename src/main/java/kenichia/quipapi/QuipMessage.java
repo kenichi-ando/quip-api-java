@@ -91,6 +91,39 @@ public class QuipMessage extends QuipJsonObject {
         .toArray(String[]::new);
   }
 
+  /**
+   * Gets an array of files with name and hash as JsonArray
+   * @return String "[{"name":"xxxxx","hash":"xxxx"}]"
+   */
+  public String getFilesWithHashAsString() {
+    JsonArray arr = _getJsonArray("files");
+    if (arr == null) {
+      return null;
+    }
+    return arr.toString();
+  }
+
+  /**
+   * Gets an array of files with name and hash
+   * @return String[] [{"name":"xxxxx","hash":"xxxx"}]
+   */
+  public String[] getFilesWithHash() {
+      JsonArray arr = _getJsonArray("files");
+      if (arr == null) {
+          return null;
+      }
+      return StreamSupport.stream(arr.spliterator(), false)
+            .map(e -> {
+              JsonObject file = e.getAsJsonObject();
+              if(Objects.nonNull(file)){
+                return file.toString();
+              }
+              return null;
+            }).filter(Objects::nonNull)
+            .toArray(String[]::new);
+  }
+
+
   public QuipDiffGroup[] getDiffGroups() {
     JsonArray arr = _getJsonArray("diff_groups");
     if (arr == null)
@@ -143,9 +176,9 @@ public class QuipMessage extends QuipJsonObject {
         params.add(new BasicNameValuePair("sorted_by", sortedBy.name()));
     }
 
-    if (messageType != null)
-      params.add(
-              new BasicNameValuePair("message_type", messageType.name()));
+    if (messageType != null) {
+      params.add(new BasicNameValuePair("message_type", messageType.name().toLowerCase()));
+    }
     JsonArray arr = _getToJsonArray(
             new URIBuilder(QuipAccess.ENDPOINT + "/messages/" + threadId)
                     .addParameters(params).build());

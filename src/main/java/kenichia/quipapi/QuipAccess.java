@@ -21,6 +21,8 @@ import com.google.gson.JsonObject;
 import org.apache.http.Consts;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
@@ -72,10 +74,8 @@ class QuipAccess {
       byte[] buff = new byte[(int) res.getEntity().getContentLength()];
       res.getEntity().getContent().read(buff);
       return buff;
-    } else {
-      _checkError(_toJsonObject(res));
-      return null;
     }
+    return null;
   }
 
   protected static int _getToStatusCode(String uri) throws IOException {
@@ -147,22 +147,22 @@ class QuipAccess {
     if (QuipClient._isDebugEnabled())
       System.out.println(System.lineSeparator() + "Request> " + req.toString());
     String token = QuipClient._getBearerToken();
-    if (token != null)
-      req.addHeader(HttpHeaders.AUTHORIZATION, token);
+    req.addHeader(HttpHeaders.AUTHORIZATION, token);
     HttpResponse response = req.execute().returnResponse();
     if (QuipClient._isDebugEnabled())
       System.out.println("Response> " + response.getStatusLine().toString()
           + " " + response.getEntity().toString());
+    handleErrorResponse(response);
+    updateRateLimits(response);
     return response;
   }
 
   private static String _toString(HttpResponse response) throws IOException {
-    return EntityUtils.toString(response.getEntity());
+      return EntityUtils.toString(response.getEntity());
   }
 
   private static JsonObject _toJsonObject(HttpResponse response)
-      throws IOException {
-    updateRateLimits(response);
+          throws IOException {
     JsonObject json = new Gson().fromJson(_toString(response),
         JsonObject.class);
     if (QuipClient._isDebugEnabled())
@@ -174,7 +174,6 @@ class QuipAccess {
 
   private static JsonArray _toJsonArray(HttpResponse response)
       throws IOException {
-    updateRateLimits(response);
     JsonArray json = new Gson().fromJson(_toString(response), JsonArray.class);
     if (QuipClient._isDebugEnabled())
       System.out.println("Json> " + json.toString());
@@ -196,6 +195,13 @@ class QuipAccess {
     System.out.println(
         "Error> " + errorCode + " " + error + " (" + errorDescription + ")");
     return true;
+  }
+
+  private static void handleErrorResponse(HttpResponse response) throws HttpResponseException {
+      StatusLine statusLine = response.getStatusLine();
+      if(statusLine.getStatusCode() != 200){
+          throw new HttpResponseException(statusLine.getStatusCode(),statusLine.getReasonPhrase());
+      }
   }
 
   private static void updateRateLimits(HttpResponse response){
