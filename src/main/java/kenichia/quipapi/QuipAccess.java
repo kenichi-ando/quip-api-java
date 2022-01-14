@@ -152,8 +152,8 @@ class QuipAccess {
     if (QuipClient._isDebugEnabled())
       System.out.println("Response> " + response.getStatusLine().toString()
           + " " + response.getEntity().toString());
-    handleErrorResponse(response);
     updateRateLimits(response);
+    handleErrorResponse(response);
     return response;
   }
 
@@ -205,14 +205,14 @@ class QuipAccess {
   }
 
   private static void updateRateLimits(HttpResponse response){
-    xRateLimitLimit = Integer.valueOf(response.getFirstHeader("X-Ratelimit-Limit").getValue());
-    xRateLimitRemaining = Integer.valueOf(response.getFirstHeader("X-Ratelimit-Remaining").getValue());
-    xRateLimitReset = Long.valueOf(response.getFirstHeader("X-Ratelimit-Reset").getValue());
-    xRateLimitRetryAfter = Integer.valueOf(response.getFirstHeader("Retry-After").getValue());
+      xRateLimitLimit = Integer.valueOf(response.containsHeader("X-Ratelimit-Limit") ? response.getFirstHeader("X-Ratelimit-Limit").getValue() : "0");
+      xRateLimitRemaining = Integer.valueOf(response.containsHeader("X-Ratelimit-Remaining") ? response.getFirstHeader("X-Ratelimit-Remaining").getValue() : "0");
+      xRateLimitReset = Long.valueOf(response.containsHeader("X-Ratelimit-Reset") ? response.getFirstHeader("X-Ratelimit-Reset").getValue(): "0");
+      xRateLimitRetryAfter = Integer.valueOf(response.containsHeader("Retry-After") ? response.getFirstHeader("Retry-After").getValue() : "0");
 
-    xCompanyRateLimitLimit = Integer.valueOf(response.getFirstHeader("X-Company-RateLimit-Limit").getValue());
-    xCompanyRateLimitRemaining = Integer.valueOf(response.getFirstHeader("X-Company-RateLimit-Remaining").getValue());
-    xCompanyRateLimitReset = Long.valueOf(response.getFirstHeader("X-Company-RateLimit-Reset").getValue());
-    xCompanyRetryAfter = Integer.valueOf(response.getFirstHeader("X-Company-Retry-After").getValue());
+      xCompanyRateLimitLimit = Integer.valueOf(response.containsHeader("X-Company-RateLimit-Limit") ? response.getFirstHeader("X-Company-RateLimit-Limit").getValue() : "0");
+      xCompanyRateLimitRemaining = Integer.valueOf(response.containsHeader("X-Company-RateLimit-Remaining") ? response.getFirstHeader("X-Company-RateLimit-Remaining").getValue(): "0");
+      xCompanyRateLimitReset = Long.valueOf(response.containsHeader("X-Company-RateLimit-Reset") ? response.getFirstHeader("X-Company-RateLimit-Reset").getValue(): "0");
+      xCompanyRetryAfter = Integer.valueOf(response.containsHeader("X-Company-Retry-After") ? response.getFirstHeader("X-Company-Retry-After").getValue(): "0");
   }
 }
