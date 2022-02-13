@@ -253,17 +253,6 @@ public class QuipThreadTest {
   }
 
   @Test
-  void testExportPdf() throws Exception {
-    QuipThread thread = QuipThread.createDocument("スライドテスト２２🔥", "あいうえお🌈🌈🌈",
-        null, Format.HTML, Type.SLIDES);
-    byte[] data = thread.exportAsPdf();
-    FileOutputStream fileOuputStream = new FileOutputStream("/tmp/export.pdf");
-    fileOuputStream.write(data);
-    fileOuputStream.close();
-    thread.delete();
-  }
-
-  @Test
   void testExportPdfRequest() throws Exception {
     QuipThread thread = QuipThread.createDocument("PDFエクスポートテスト🔥",
         "あいうえお🌈🌈🌈", null, Format.HTML, Type.DOCUMENT);
