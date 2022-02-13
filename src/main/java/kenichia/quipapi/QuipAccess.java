@@ -23,10 +23,14 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
@@ -35,6 +39,11 @@ import java.net.URI;
 class QuipAccess {
 
   public static String ENDPOINT = "https://platform.quip.com/1";
+
+  private static Executor _executor = Executor.newInstance(HttpClients.custom()
+      .setDefaultRequestConfig(
+          RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build())
+      .build());
 
   // ============================================
   // Protected
@@ -148,7 +157,7 @@ class QuipAccess {
       System.out.println(System.lineSeparator() + "Request> " + req.toString());
     String token = QuipClient._getBearerToken();
     req.addHeader(HttpHeaders.AUTHORIZATION, token);
-    HttpResponse response = req.execute().returnResponse();
+    HttpResponse response = _executor.execute(req).returnResponse();
     if (QuipClient._isDebugEnabled())
       System.out.println("Response> " + response.getStatusLine().toString()
           + " " + response.getEntity().toString());
@@ -158,11 +167,11 @@ class QuipAccess {
   }
 
   private static String _toString(HttpResponse response) throws IOException {
-      return EntityUtils.toString(response.getEntity());
+    return EntityUtils.toString(response.getEntity());
   }
 
   private static JsonObject _toJsonObject(HttpResponse response)
-          throws IOException {
+      throws IOException {
     JsonObject json = new Gson().fromJson(_toString(response),
         JsonObject.class);
     if (QuipClient._isDebugEnabled())
@@ -197,22 +206,48 @@ class QuipAccess {
     return true;
   }
 
-  private static void handleErrorResponse(HttpResponse response) throws HttpResponseException {
-      StatusLine statusLine = response.getStatusLine();
-      if(statusLine.getStatusCode() != 200){
-          throw new HttpResponseException(statusLine.getStatusCode(),statusLine.getReasonPhrase());
-      }
+  private static void handleErrorResponse(HttpResponse response)
+      throws HttpResponseException {
+    StatusLine statusLine = response.getStatusLine();
+    if (statusLine.getStatusCode() != 200) {
+      throw new HttpResponseException(statusLine.getStatusCode(),
+          statusLine.getReasonPhrase());
+    }
   }
 
-  private static void updateRateLimits(HttpResponse response){
-      xRateLimitLimit = Integer.valueOf(response.containsHeader("X-Ratelimit-Limit") ? response.getFirstHeader("X-Ratelimit-Limit").getValue() : "0");
-      xRateLimitRemaining = Integer.valueOf(response.containsHeader("X-Ratelimit-Remaining") ? response.getFirstHeader("X-Ratelimit-Remaining").getValue() : "0");
-      xRateLimitReset = Long.valueOf(response.containsHeader("X-Ratelimit-Reset") ? response.getFirstHeader("X-Ratelimit-Reset").getValue(): "0");
-      xRateLimitRetryAfter = Integer.valueOf(response.containsHeader("Retry-After") ? response.getFirstHeader("Retry-After").getValue() : "0");
+  private static void updateRateLimits(HttpResponse response) {
+    xRateLimitLimit = Integer
+        .valueOf(response.containsHeader("X-Ratelimit-Limit")
+            ? response.getFirstHeader("X-Ratelimit-Limit").getValue()
+            : "0");
+    xRateLimitRemaining = Integer
+        .valueOf(response.containsHeader("X-Ratelimit-Remaining")
+            ? response.getFirstHeader("X-Ratelimit-Remaining").getValue()
+            : "0");
+    xRateLimitReset = Long.valueOf(response.containsHeader("X-Ratelimit-Reset")
+        ? response.getFirstHeader("X-Ratelimit-Reset").getValue()
+        : "0");
+    xRateLimitRetryAfter = Integer
+        .valueOf(response.containsHeader("Retry-After")
+            ? response.getFirstHeader("Retry-After").getValue()
+            : "0");
 
-      xCompanyRateLimitLimit = Integer.valueOf(response.containsHeader("X-Company-RateLimit-Limit") ? response.getFirstHeader("X-Company-RateLimit-Limit").getValue() : "0");
-      xCompanyRateLimitRemaining = Integer.valueOf(response.containsHeader("X-Company-RateLimit-Remaining") ? response.getFirstHeader("X-Company-RateLimit-Remaining").getValue(): "0");
-      xCompanyRateLimitReset = Long.valueOf(response.containsHeader("X-Company-RateLimit-Reset") ? response.getFirstHeader("X-Company-RateLimit-Reset").getValue(): "0");
-      xCompanyRetryAfter = Integer.valueOf(response.containsHeader("X-Company-Retry-After") ? response.getFirstHeader("X-Company-Retry-After").getValue(): "0");
+    xCompanyRateLimitLimit = Integer
+        .valueOf(response.containsHeader("X-Company-RateLimit-Limit")
+            ? response.getFirstHeader("X-Company-RateLimit-Limit").getValue()
+            : "0");
+    xCompanyRateLimitRemaining = Integer
+        .valueOf(response.containsHeader("X-Company-RateLimit-Remaining")
+            ? response.getFirstHeader("X-Company-RateLimit-Remaining")
+                .getValue()
+            : "0");
+    xCompanyRateLimitReset = Long
+        .valueOf(response.containsHeader("X-Company-RateLimit-Reset")
+            ? response.getFirstHeader("X-Company-RateLimit-Reset").getValue()
+            : "0");
+    xCompanyRetryAfter = Integer
+        .valueOf(response.containsHeader("X-Company-Retry-After")
+            ? response.getFirstHeader("X-Company-Retry-After").getValue()
+            : "0");
   }
 }

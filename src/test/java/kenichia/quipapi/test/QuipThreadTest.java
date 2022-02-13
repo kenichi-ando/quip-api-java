@@ -22,7 +22,6 @@ import kenichia.quipapi.QuipThread.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileOutputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,11 +63,14 @@ public class QuipThreadTest {
   }
 
   @Test
-  void getRecentThreads(Integer count, Instant maxUpdatedUsec, boolean includeHidden) throws Exception {
-    QuipThread[] threads = QuipThread.getRecentThreads(count,maxUpdatedUsec,includeHidden);
+  void getRecentThreads(Integer count, Instant maxUpdatedUsec,
+      boolean includeHidden) throws Exception {
+    QuipThread[] threads = QuipThread.getRecentThreads(count, maxUpdatedUsec,
+        includeHidden);
     assertTrue(threads.length <= count);
-    if(threads.length > 0){
-        assertTrue(threads[1].getUpdatedUsec().toEpochMilli() <= maxUpdatedUsec.toEpochMilli());
+    if (threads.length > 0) {
+      assertTrue(threads[1].getUpdatedUsec().toEpochMilli() <= maxUpdatedUsec
+          .toEpochMilli());
     }
     for (QuipThread t : threads) {
       System.out.println(t.getId() + ", " + t.getTitle() + ", " + t.getLink());

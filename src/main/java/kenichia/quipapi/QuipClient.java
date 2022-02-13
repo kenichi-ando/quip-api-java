@@ -100,36 +100,36 @@ public class QuipClient extends QuipAccess {
         .addParameters(params).build());
   }
 
-  public static Integer getUserRateLimit(){
-     return QuipAccess.xRateLimitLimit;
+  public static Integer getUserRateLimit() {
+    return QuipAccess.xRateLimitLimit;
   }
 
-  public static Long getUserRateReset(){
-      return QuipAccess.xRateLimitReset;
+  public static Long getUserRateReset() {
+    return QuipAccess.xRateLimitReset;
   }
 
-  public static Integer getUserRateLimitRemaining(){
-      return QuipAccess.xRateLimitRemaining;
+  public static Integer getUserRateLimitRemaining() {
+    return QuipAccess.xRateLimitRemaining;
   }
 
-  public static Integer getUserRetryAfter(){
-      return QuipAccess.xRateLimitRetryAfter;
+  public static Integer getUserRetryAfter() {
+    return QuipAccess.xRateLimitRetryAfter;
   }
 
-  public static Integer getCompanyRateLimit(){
-      return QuipAccess.xCompanyRateLimitLimit;
+  public static Integer getCompanyRateLimit() {
+    return QuipAccess.xCompanyRateLimitLimit;
   }
 
-  public static Long getCompanyRateReset(){
-      return QuipAccess.xCompanyRateLimitReset;
+  public static Long getCompanyRateReset() {
+    return QuipAccess.xCompanyRateLimitReset;
   }
 
-  public static Integer getCompanyRateLimitRemaining(){
-      return QuipAccess.xCompanyRateLimitRemaining;
+  public static Integer getCompanyRateLimitRemaining() {
+    return QuipAccess.xCompanyRateLimitRemaining;
   }
 
-  public static Integer getCompanyRetryAfter(){
-      return QuipAccess.xCompanyRetryAfter;
+  public static Integer getCompanyRetryAfter() {
+    return QuipAccess.xCompanyRetryAfter;
   }
 
   public static void enableDebug(boolean isEnabled) {
