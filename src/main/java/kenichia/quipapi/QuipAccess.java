@@ -60,6 +60,8 @@ class QuipAccess {
   // utc timestamp in seconds
   protected static Long xCompanyRateLimitReset = 0L;
   protected static Integer xCompanyRetryAfter = 0;
+  protected static Integer xCurrentRetryCount = 0;
+  protected static Integer xMaxRetries = 50;
 
   protected static JsonObject _getToJsonObject(String uri) throws IOException {
     return _toJsonObject(_requestGet(uri));
@@ -153,6 +155,8 @@ class QuipAccess {
   }
 
   private static HttpResponse _sendRequest(Request req) throws IOException {
+    Gson gson = new Gson();
+    Request originalReq = gson.fromJson(gson.toJson(req), Request.class);
     if (QuipClient._isDebugEnabled())
       System.out.println(System.lineSeparator() + "Request> " + req.toString());
     String token = QuipClient._getBearerToken();
@@ -162,7 +166,23 @@ class QuipAccess {
       System.out.println("Response> " + response.getStatusLine().toString()
           + " " + response.getEntity().toString());
     updateRateLimits(response);
+    int statusCode = response.getStatusLine().getStatusCode();
+    if (statusCode == 429 || statusCode == 503) {
+      if (xCurrentRetryCount < xMaxRetries) {
+        long backoff = (xRateLimitRetryAfter + (xRateLimitLimit - xRateLimitRemaining)/100)* 100L;
+        xCurrentRetryCount++;
+        try {
+          if (QuipClient._isDebugEnabled())
+            System.out.println("Waiting for: " + backoff + "ms" + ", retry count: " + xCurrentRetryCount + ", error code: " + statusCode);
+          Thread.sleep(backoff);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        response = _sendRequest(originalReq);
+      }
+    }
     handleErrorResponse(response);
+    xCurrentRetryCount = 0;
     return response;
   }
 
@@ -249,5 +269,9 @@ class QuipAccess {
         .valueOf(response.containsHeader("X-Company-Retry-After")
             ? response.getFirstHeader("X-Company-Retry-After").getValue()
             : "0");
+  }
+
+  public static void setMaxRetries(int maxRetries) {
+    xMaxRetries = maxRetries;
   }
 }
