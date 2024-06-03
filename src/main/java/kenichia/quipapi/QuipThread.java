@@ -43,7 +43,7 @@ public class QuipThread extends QuipJsonObject {
     // ============================================
 
     public enum Type {
-        DOCUMENT("document"), SPREADSHEET("spreadsheet"), CHAT("chat");
+        DOCUMENT("document"), SPREADSHEET("spreadsheet"), CHAT("chat"), SLIDES("slides");
 
         private final String _value;
 
