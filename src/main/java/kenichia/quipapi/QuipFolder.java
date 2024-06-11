@@ -106,6 +106,10 @@ public class QuipFolder extends QuipJsonObject {
         return _getString("folder", "title");
     }
 
+    public String getLink() {
+        return _getString("folder", "link");
+    }
+
     public Instant getCreatedUsec() {
         return _getInstant("folder", "created_usec");
     }
